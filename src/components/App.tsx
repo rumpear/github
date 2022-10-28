@@ -1,47 +1,39 @@
-import { useCallback, useEffect, useState } from 'react';
-import { useFetch, useFetchUsers } from '../hooks';
-import { getUsersData } from '../services/githubApi';
-import { IItems } from '../services/types';
+import { useState } from 'react';
+import { useFetchUsers } from '../hooks';
 import { SearchField, CardsList } from './';
 import './App.style.scss';
 
 function App() {
   const [query, setQuery] = useState('');
-  // const [page, setPage] = useState(1);
-  const [data, setData] = useState<IItems[]>([]);
 
-  const { users, loading, error, setPage } = useFetchUsers(query);
+  const { usersData, loading, error, nextPage, goToPage, page, totalPages } =
+    useFetchUsers(query);
 
   const handlePageChange = (): void => {
-    setPage((prev) => prev + 1);
+    nextPage();
   };
 
-  console.log(data, 'data');
-  useEffect(() => {
-    if (users?.items.length) {
-      setData((prev: IItems[]) => {
-        return [...prev, ...users?.items];
-      });
-    }
-  }, [users?.items]);
-  const usersData = users?.items;
-  const isUsersEmpty = !usersData?.length;
-  const isReadyToRender = !loading && !error && !isUsersEmpty;
+  // const usersData = users?.items;
+  // const isUsersEmpty = !usersData?.length;
+  // const isReadyToRender = !loading && !error && !isUsersEmpty;
+
+  const showNextPage = page < totalPages;
 
   return (
     <div className='App'>
       <div className='SearchField-wrapper'>
-        <SearchField setQuery={setQuery} setPage={() => {}} />
+        <SearchField setQuery={setQuery} goToPage={goToPage} />
       </div>
-      {!isUsersEmpty && <CardsList users={data} />}
+      {!!usersData?.length && <CardsList users={usersData} />}
       {/* {loading && <h1>Loading</h1>}
       {!loading && error && <h1>Something went wrong</h1>}
       {!loading && isUsersEmpty && <h1>Nothing was found in your request</h1>}
       {isReadyToRender && <CardsList users={data} />} */}
 
-      <button type='button' onClick={handlePageChange}>
+      {showNextPage && <div onClick={handlePageChange}>Next page</div>}
+      {/* <button type='button' onClick={handlePageChange} disabled={loading}>
         Next page
-      </button>
+      </button> */}
     </div>
   );
 }
