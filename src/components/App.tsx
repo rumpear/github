@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useFetchUsers } from '../hooks';
 import { SearchField, CardsList } from './';
 import './App.style.scss';
@@ -6,8 +6,16 @@ import './App.style.scss';
 function App() {
   const [query, setQuery] = useState('');
 
-  const { usersData, loading, error, nextPage, goToPage, page, totalPages } =
-    useFetchUsers(query);
+  const {
+    usersData,
+    setUsersData,
+    loading,
+    error,
+    nextPage,
+    goToPage,
+    page,
+    totalPages,
+  } = useFetchUsers(query);
 
   const handlePageChange = (): void => {
     nextPage();
@@ -22,7 +30,11 @@ function App() {
   return (
     <div className='App'>
       <div className='SearchField-wrapper'>
-        <SearchField setQuery={setQuery} goToPage={goToPage} />
+        <SearchField
+          setQuery={setQuery}
+          goToPage={goToPage}
+          setUsersData={setUsersData}
+        />
       </div>
       {!!usersData?.length && <CardsList users={usersData} />}
       {/* {loading && <h1>Loading</h1>}
@@ -30,7 +42,11 @@ function App() {
       {!loading && isUsersEmpty && <h1>Nothing was found in your request</h1>}
       {isReadyToRender && <CardsList users={data} />} */}
 
-      {showNextPage && <div onClick={handlePageChange}>Next page</div>}
+      {showNextPage && (
+        <button type='button' onClick={handlePageChange} disabled={loading}>
+          Next page
+        </button>
+      )}
       {/* <button type='button' onClick={handlePageChange} disabled={loading}>
         Next page
       </button> */}
