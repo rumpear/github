@@ -1,16 +1,17 @@
-import { IItems } from '../../services/types';
+import { IFullUser } from '../../services/types';
 import './CardsList.style.scss';
 
 interface ICardsListProps {
-  users: IItems[];
+  users: IFullUser[];
 }
 
 const CardsList = ({ users }: ICardsListProps) => {
   return (
     <div className='Card-wrapper'>
-      {users.map((user: IItems) => {
+      {/* : IFullUser */}
+      {users.map((user, idx) => {
         return (
-          <div key={user.login} className='Card'>
+          <div key={user.login + idx} className='Card'>
             <div className='Card-thumb'>
               <img
                 className='Card-avatar'
@@ -18,7 +19,11 @@ const CardsList = ({ users }: ICardsListProps) => {
                 alt={user.login}
               />
             </div>
-            <p className='Card-username'>{user.login}</p>
+            <div className='Card-text-wrapper'>
+              <p className='Card-login'>{user.login}</p>
+              <p className='Card-bio'>{user.bio}</p>
+            </div>
+            {/* <button type='button'>Fav</button> */}
           </div>
         );
       })}

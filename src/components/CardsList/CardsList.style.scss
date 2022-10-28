@@ -14,17 +14,28 @@
   }
 
   &-wrapper {
-    width: 300px;
+    width: 400px;
     max-height: 500px;
     overflow-y: scroll;
     // padding: 0px 10px;
     padding-right: 10px;
   }
 
-  &-username {
-    // max-width: 230px;
+  &-text-wrapper {
+  }
+
+  &-login {
     max-width: 165px;
     font-size: 18px;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    margin-bottom: 5px;
+  }
+
+  &-bio {
+    max-width: 220px;
+    font-size: 14px;
     overflow: hidden;
     white-space: nowrap;
     text-overflow: ellipsis;
@@ -39,11 +50,5 @@
   }
 
   &-avatar {
-  }
-}
-
-.SearchField {
-  &-wrapper {
-    margin: 10px 0;
   }
 }
