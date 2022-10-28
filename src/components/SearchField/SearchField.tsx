@@ -1,13 +1,19 @@
 import { useEffect, useState } from 'react';
 import { useDebounce } from 'use-debounce';
+import { IFullUser } from '../../services/types';
 import './SearchField.style.scss';
 
 interface ISearchFieldProps {
   setQuery: React.Dispatch<React.SetStateAction<string>>;
   goToPage: React.Dispatch<React.SetStateAction<number>>;
+  setUsersData: React.Dispatch<React.SetStateAction<IFullUser[]>>;
 }
 
-const SearchField = ({ setQuery, goToPage }: ISearchFieldProps) => {
+const SearchField = ({
+  setQuery,
+  goToPage,
+  setUsersData,
+}: ISearchFieldProps) => {
   const [inputVal, setInputVal] = useState('');
   const [debouncedInputVal] = useDebounce(inputVal, 500);
 
@@ -17,10 +23,8 @@ const SearchField = ({ setQuery, goToPage }: ISearchFieldProps) => {
   };
 
   useEffect(() => {
-    if (debouncedInputVal) {
-      setQuery(debouncedInputVal);
-      goToPage(1);
-    }
+    setQuery(debouncedInputVal);
+    goToPage(1);
   }, [debouncedInputVal, goToPage, setQuery]);
 
   return (
