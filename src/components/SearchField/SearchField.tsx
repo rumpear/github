@@ -1,29 +1,27 @@
 import { useEffect, useState } from 'react';
 import { useDebounce } from 'use-debounce';
-import { IItems } from '../../services/types';
 import './SearchField.style.scss';
 
 interface ISearchFieldProps {
   setQuery: React.Dispatch<React.SetStateAction<string>>;
-  setPage: any;
+  goToPage: React.Dispatch<React.SetStateAction<number>>;
 }
 
-const SearchField = ({ setQuery, setPage }: ISearchFieldProps) => {
-  const [inputValue, setValue] = useState('');
-  const [debouncedInputValue] = useDebounce(inputValue, 500);
+const SearchField = ({ setQuery, goToPage }: ISearchFieldProps) => {
+  const [inputVal, setInputVal] = useState('');
+  const [debouncedInputVal] = useDebounce(inputVal, 500);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { value } = e.target;
-    setValue(value);
+    setInputVal(value);
   };
 
   useEffect(() => {
-    if (debouncedInputValue) {
-      setQuery(debouncedInputValue);
+    if (debouncedInputVal) {
+      setQuery(debouncedInputVal);
+      goToPage(1);
     }
-  }, [debouncedInputValue, inputValue, setPage, setQuery]);
-
-  //   console.log(debouncedInputValue);
+  }, [debouncedInputVal, goToPage, setQuery]);
 
   return (
     <div className='SearchField'>
@@ -34,7 +32,7 @@ const SearchField = ({ setQuery, setPage }: ISearchFieldProps) => {
         name='name'
         placeholder='Enter username'
         onChange={handleInputChange}
-        value={inputValue}
+        value={inputVal}
       />
     </div>
   );
