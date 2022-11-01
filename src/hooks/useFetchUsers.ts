@@ -30,8 +30,7 @@ export const useFetchUsers: TUseFetchUsers = (query) => {
 
   useEffect(() => {
     setUsersData([]);
-    console.log(query.length, 'query.length');
-    // console.log(totalUsersCount, 'totalUsersCount');
+
     if (!query.length) {
       setTotalUsersCount(0);
     }
@@ -45,7 +44,6 @@ export const useFetchUsers: TUseFetchUsers = (query) => {
     }
 
     setLoading(true);
-    // setUsersData([]);
     try {
       const data = await getUsersData(query, page);
       const additionalData = await getAdditionalUsersData(data.items);
@@ -68,23 +66,6 @@ export const useFetchUsers: TUseFetchUsers = (query) => {
   useEffect(() => {
     fetchData();
   }, [fetchData]);
-
-  // useEffect(() => {
-  //   // console.log(query.length, 'query.length');
-  //   // if (!query.length) {
-  //   //   setUsersData([]);
-  //   //   setTotalUsersCount(0);
-  //   //   console.log(0, '23423');
-  //   // }
-  //   // if (query.length <= 1) {
-  //   //   setUsersData([]);
-  //   //   setTotalUsersCount(0);
-  //   //   console.log(0, '23423');
-  //   // }
-
-  //   setTotalUsersCount(0);
-  //   setUsersData([]);
-  // }, [query]);
 
   return {
     usersData,
