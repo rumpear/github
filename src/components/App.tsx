@@ -17,39 +17,28 @@ function App() {
     totalPages,
   } = useFetchUsers(query);
 
-  const handlePageChange = (): void => {
-    nextPage();
-  };
-
   // const usersData = users?.items;
   // const isUsersEmpty = !usersData?.length;
   // const isReadyToRender = !loading && !error && !isUsersEmpty;
 
-  const showNextPage = page < totalPages;
-
   return (
     <div className='App'>
       <div className='SearchField-wrapper'>
-        <SearchField
-          setQuery={setQuery}
-          goToPage={goToPage}
-          setUsersData={setUsersData}
-        />
+        <SearchField setQuery={setQuery} goToPage={goToPage} />
       </div>
-      {!!usersData?.length && <CardsList users={usersData} />}
+      {!!usersData?.length && (
+        <CardsList
+          users={usersData}
+          nextPage={nextPage}
+          totalPages={totalPages}
+          loading={loading}
+          page={page}
+        />
+      )}
       {/* {loading && <h1>Loading</h1>}
       {!loading && error && <h1>Something went wrong</h1>}
       {!loading && isUsersEmpty && <h1>Nothing was found in your request</h1>}
       {isReadyToRender && <CardsList users={data} />} */}
-
-      {showNextPage && (
-        <button type='button' onClick={handlePageChange} disabled={loading}>
-          Next page
-        </button>
-      )}
-      {/* <button type='button' onClick={handlePageChange} disabled={loading}>
-        Next page
-      </button> */}
     </div>
   );
 }
