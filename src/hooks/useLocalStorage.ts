@@ -1,14 +1,17 @@
 import { useState, useEffect, Dispatch, SetStateAction } from 'react';
 
-type UseLocalStorage = <T>(
+type TUseLocalStorage = <T, D>(
   key: string,
-  defaultValue?: any
+  defaultValue?: D
 ) => {
   localStorageData: T;
   setLocalStorageData: Dispatch<SetStateAction<T>>;
 };
 
-export const useLocalStorage: UseLocalStorage = (key, defaultValue) => {
+export const useLocalStorage: TUseLocalStorage = <T, D>(
+  key: string,
+  defaultValue?: D
+) => {
   const ifLocalDataExist = localStorage.getItem(key);
 
   const getData = () => {
@@ -19,7 +22,7 @@ export const useLocalStorage: UseLocalStorage = (key, defaultValue) => {
     return localStorage.setItem(key, JSON.stringify(localStorageData));
   };
 
-  const [localStorageData, setLocalStorageData] = useState(getData);
+  const [localStorageData, setLocalStorageData] = useState<T>(getData);
   useEffect(setData, [key, localStorageData]);
 
   return { localStorageData, setLocalStorageData };
