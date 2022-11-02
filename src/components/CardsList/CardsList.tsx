@@ -70,23 +70,17 @@ const CardsList = ({
       return setLocalStorageData(user);
     }
 
-    if (user) {
+    if (!!user) {
       setLocalStorageData((prev) => {
-        console.log(prev, 'prev');
-        const uniqueUsersData = prev.filter((user) => {
-          return user.login !== currentUserLogin;
+        const usersLogins = prev.map((user) => user.login);
+        console.log(usersLogins, 'usersLogins');
+
+        const uniqueUsersData = user.filter((user) => {
+          console.log(user.login, 'user.login');
+          console.log(usersLogins.includes(user.login));
+          return !usersLogins.includes(user.login);
         });
         console.log(uniqueUsersData, 'uniqueUsersData');
-
-        // const usersLogins = prev.map((user) => user.login);
-
-        // console.log(usersLogins, 'usersLogins');
-        // const uniqueUsersData = user.filter((user) => {
-        //   console.log(user.login, 'user.login');
-        //   console.log(usersLogins.includes(user.login));
-        //   return !usersLogins.includes(user.login);
-        // });
-        // console.log(uniqueUsersData, 'uniqueUsersData');
         return [...prev, ...uniqueUsersData];
       });
     }
