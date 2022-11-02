@@ -49,8 +49,13 @@ export const useFetchUsers: TUseFetchUsers = (query) => {
       const additionalData = await getAdditionalUsersData(data.items);
 
       setUsersData((prev) => {
+        const usersLogins = prev.map((user) => user.login);
+        const uniqueUsersData = additionalData.filter((user) => {
+          return !usersLogins.includes(user.login);
+        });
+
         if (additionalData.length) {
-          return [...prev, ...additionalData];
+          return [...prev, ...uniqueUsersData];
         }
         return prev;
       });
