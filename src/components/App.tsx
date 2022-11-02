@@ -17,16 +17,16 @@ function App() {
     totalPages,
   } = useFetchUsers(query);
 
-  // const usersData = users?.items;
-  // const isUsersEmpty = !usersData?.length;
-  // const isReadyToRender = !loading && !error && !isUsersEmpty;
+  const isUsersDataExist = !!usersData.length;
+  // const isReadyToRender = !loading && !error && !isUsersDataExist;
 
   return (
     <div className='App'>
       <div className='SearchField-wrapper'>
         <SearchField setQuery={setQuery} goToPage={goToPage} />
       </div>
-      {!!usersData?.length && (
+      {/* {loading && <h1>Loading</h1>} */}
+      {isUsersDataExist && (
         <CardsList
           users={usersData}
           nextPage={nextPage}
@@ -35,9 +35,10 @@ function App() {
           page={page}
         />
       )}
+
       {/* {loading && <h1>Loading</h1>}
       {!loading && error && <h1>Something went wrong</h1>}
-      {!loading && isUsersEmpty && <h1>Nothing was found in your request</h1>}
+      {!loading && !isUsersDataExist && <h1>Nothing was found in your request</h1>}
       {isReadyToRender && <CardsList users={data} />} */}
     </div>
   );
