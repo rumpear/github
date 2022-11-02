@@ -12,13 +12,16 @@
   &:not(:last-child) {
     margin-bottom: 10px;
   }
+  &:hover {
+    cursor: pointer;
+  }
 
   &-wrapper {
     width: 400px;
     max-height: 500px;
     overflow-y: scroll;
-    // padding: 0px 10px;
     padding-right: 10px;
+    margin-bottom: 20px;
   }
 
   &-text-wrapper {
@@ -50,5 +53,10 @@
   }
 
   &-avatar {
+  }
+
+  &-next-page {
+    height: 1px;
+    width: 100%;
   }
 }
