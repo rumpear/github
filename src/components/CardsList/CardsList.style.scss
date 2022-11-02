@@ -12,6 +12,7 @@
   &:not(:last-child) {
     margin-bottom: 10px;
   }
+
   &:hover {
     cursor: pointer;
   }
@@ -24,7 +25,8 @@
     margin-bottom: 20px;
   }
 
-  &-text-wrapper {
+  &-textWrapper {
+    margin-right: 10px;
   }
 
   &-login {
@@ -55,7 +57,12 @@
   &-avatar {
   }
 
-  &-next-page {
+  &-favBtn {
+    width: 50px;
+    margin-left: auto;
+  }
+
+  &-nextPageBtn {
     height: 1px;
     width: 100%;
   }
