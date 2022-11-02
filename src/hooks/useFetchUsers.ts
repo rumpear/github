@@ -1,10 +1,9 @@
 import { useCallback, useEffect, useState } from 'react';
-import { getAdditionalUsersData } from '../utils';
-import { getUsersData, PER_PAGE } from '../services/githubApi';
-import { IFullUser } from '../services/types';
+import { getAdditionalUsersData, getUniqueUsersData } from '../utils';
+import { MINIMAL_QUERY_LENGTH, PER_PAGE } from '../constants';
+import { getUsersData } from '../services/githubApi';
 import { usePagination } from './';
-
-const MINIMAL_QUERY_LENGTH = 3;
+import { IFullUser } from '../services/types';
 
 export type TUseFetchUsers = (query: string) => {
   usersData: IFullUser[];
@@ -47,17 +46,11 @@ export const useFetchUsers: TUseFetchUsers = (query) => {
     try {
       const data = await getUsersData(query, page);
       const additionalData = await getAdditionalUsersData(data.items);
+      const isAdditionalDataExist = !!additionalData.length;
 
       setUsersData((prev) => {
-        const usersLogins = prev.map((user) => user.login);
-        const uniqueUsersData = additionalData.filter((user) => {
-          return !usersLogins.includes(user.login);
-        });
-
-        if (additionalData.length) {
-          return [...prev, ...uniqueUsersData];
-        }
-        return prev;
+        const uniqueUsersData = getUniqueUsersData(prev, additionalData);
+        return isAdditionalDataExist ? [...prev, ...uniqueUsersData] : prev;
       });
 
       setTotalUsersCount(data.total_count);
