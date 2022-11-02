@@ -37,7 +37,7 @@ const UserCard = ({ user, resetUser }: IUserCardProps) => {
         <li className='UserCard-bio'>following: {user.following}</li>
         <li className='UserCard-bio'>repos: {user.public_repos}</li>
         <li className='UserCard-bio'>
-          <a className='' href={user.html_url}>
+          <a className='UserCard-link' href={user.html_url}>
             Github Link
           </a>
         </li>
