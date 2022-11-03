@@ -1,15 +1,11 @@
 import { Octokit } from 'octokit';
+import { PER_PAGE, TOKEN } from '../constants';
 import {
   IUsersData,
   IFullUserData,
   TGetFullUserData,
   TGetUsersData,
 } from './types';
-
-const TOKEN =
-  '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';
-
-export const PER_PAGE = 15;
 
 const octokit = new Octokit({
   auth: TOKEN,
