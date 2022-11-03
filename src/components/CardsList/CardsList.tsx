@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { InView } from 'react-intersection-observer';
 import { useLocalStorage } from '../../hooks';
 import { IFullUser } from '../../services/types';
@@ -12,6 +12,7 @@ interface ICardsListProps {
   totalPages?: number;
   page?: number;
   loading?: boolean;
+  setUsersData?: React.Dispatch<React.SetStateAction<IFullUser[]>>;
 }
 
 const CardsList = ({
@@ -20,6 +21,7 @@ const CardsList = ({
   page = 1,
   totalPages = 1,
   loading = false,
+  setUsersData = () => {},
 }: ICardsListProps) => {
   const [currentUser, setCurrentUser] = useState<IFullUser | null>(null);
   const { localStorageData, setLocalStorageData } = useLocalStorage<
@@ -27,7 +29,7 @@ const CardsList = ({
     []
   >('favoriteUsers', []);
 
-  const showNextPage = page! < totalPages!;
+  const showNextPage = page < totalPages;
 
   const handleCardClick = (currentUserLogin: string) => {
     const user = users.find((user: IFullUser) => {
@@ -48,21 +50,43 @@ const CardsList = ({
   };
 
   const addToFavorites = (currUserLogin: string) => {
-    const currentUser = users.filter((user) => user.login === currUserLogin);
+    // const currentUser = users.filter((user) => user.login === currUserLogin);
+
+    // *
+    const currentUser = users
+      .filter((user) => user.login === currUserLogin)
+      .map((user) => {
+        return { ...user, isFavorite: !user.isFavorite };
+      });
+
     const isLocalStorageEmpty = !localStorageData.length;
+    console.log(currentUser, 'currentUser');
 
     isLocalStorageEmpty
       ? setLocalStorageData(currentUser)
       : setLocalStorageData((prev) => {
           const uniqueUsersData = getUniqueUsersData(prev, currentUser);
-          return [...prev, ...uniqueUsersData];
+          // return [...prev, ...uniqueUsersData];
+
+          // *
+          const uniqueUsersDataWithFavorites = uniqueUsersData.map((user) => {
+            return { ...user, isFavorite: false };
+          });
+
+          // setUsersData(uniqueUsersDataWithFavorites);
+          return [...prev, ...uniqueUsersDataWithFavorites];
         });
   };
+
+  // useEffect(() => {}, [currentUser]);
 
   return (
     <>
       <div className='CardList'>
         {users.map((user: IFullUser) => {
+          // console.log(user, 'user');
+          console.log(user.isFavorite, 'user.isFavorite');
+
           return (
             <div key={user.login} className='Card'>
               <div
@@ -87,7 +111,7 @@ const CardsList = ({
                   className='Card-favBtn'
                   onClick={() => addToFavorites(user.login)}
                 >
-                  Fav
+                  {user.isFavorite ? 'Remove' : 'Add'}
                 </button>
               </div>
             </div>
