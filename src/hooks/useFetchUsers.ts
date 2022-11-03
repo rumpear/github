@@ -50,7 +50,16 @@ export const useFetchUsers: TUseFetchUsers = (query) => {
 
       setUsersData((prev) => {
         const uniqueUsersData = getUniqueUsersData(prev, additionalData);
-        return isAdditionalDataExist ? [...prev, ...uniqueUsersData] : prev;
+        // return isAdditionalDataExist ? [...prev, ...uniqueUsersData] : prev;
+
+        // *
+        const uniqueUsersDataWithFavorites = uniqueUsersData.map((user) => {
+          return { ...user, isFavorite: false };
+        });
+
+        return isAdditionalDataExist
+          ? [...prev, ...uniqueUsersDataWithFavorites]
+          : prev;
       });
 
       setTotalUsersCount(data.total_count);
@@ -64,6 +73,8 @@ export const useFetchUsers: TUseFetchUsers = (query) => {
   useEffect(() => {
     fetchData();
   }, [fetchData]);
+
+  console.log(usersData, 'usersData');
 
   return {
     usersData,
