@@ -21,14 +21,18 @@ export const usePagination: TUsePagination = (contentPerPage, totalCount) => {
 
   const nextPage = () => {
     setPage((prev) => {
-      if (prev === totalPages) return prev;
+      if (prev === totalPages) {
+        return prev;
+      }
       return prev + 1;
     });
   };
 
   const prevPage = () => {
     setPage((prev) => {
-      if (prev === 1) return prev;
+      if (prev === 1) {
+        return prev;
+      }
       return prev - 1;
     });
   };
