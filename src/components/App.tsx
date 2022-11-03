@@ -4,9 +4,9 @@ import { IFullUser } from '../services/types';
 import { SearchField, CardsList } from './';
 import './App.style.scss';
 
-type TMode = 'search' | 'favorites';
+// type TMode = 'search' | 'favorites';
 
-function App() {
+const App = () => {
   const [query, setQuery] = useState('');
   const [isSearchMode, setIsSearchMode] = useState(true);
   console.log(isSearchMode, 'isSearchMode');
@@ -34,6 +34,7 @@ function App() {
   // const isReadyToRender = !loading && !error && isUsersDataExist;
   // console.log(isReadyToRender, 'isReadyToRender');
   console.log(localStorageData.length, 'localStorage.length');
+
   return (
     <div className='App'>
       <button
@@ -62,6 +63,7 @@ function App() {
               totalPages={totalPages}
               loading={loading}
               page={page}
+              setUsersData={setUsersData}
               // localStorageData
               // setLocalStorageData
             />
@@ -78,6 +80,6 @@ function App() {
       )}
     </div>
   );
-}
+};
 
 export default App;
