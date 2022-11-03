@@ -65,6 +65,7 @@ export interface IFullUser {
   type: string;
   updated_at: string;
   url: string;
+  isFavorite: boolean;
 }
 
 export interface IFullUserData {
