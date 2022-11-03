@@ -2,33 +2,37 @@ import { useState } from 'react';
 import { InView } from 'react-intersection-observer';
 import { useLocalStorage } from '../../hooks';
 import { IFullUser } from '../../services/types';
+import { getUniqueUsersData } from '../../utils/getUniqueUsersData';
 import { UserCard } from '../UserCard';
 import './CardsList.style.scss';
 
 interface ICardsListProps {
   users: IFullUser[];
-  nextPage: () => void;
-  totalPages: number;
-  page: number;
-  loading: boolean;
+  nextPage?: () => void;
+  totalPages?: number;
+  page?: number;
+  loading?: boolean;
 }
 
 const CardsList = ({
   users,
-  nextPage,
-  page,
-  totalPages,
-  loading,
+  nextPage = () => {},
+  page = 1,
+  totalPages = 1,
+  loading = false,
 }: ICardsListProps) => {
   const [currentUser, setCurrentUser] = useState<IFullUser | null>(null);
   const { localStorageData, setLocalStorageData } = useLocalStorage<
-    IFullUser[]
+    IFullUser[],
+    []
   >('favoriteUsers', []);
 
-  const showNextPage = page < totalPages;
+  const showNextPage = page! < totalPages!;
 
   const handleCardClick = (currentUserLogin: string) => {
-    const user = users.find((user) => user.login === currentUserLogin);
+    const user = users.find((user: IFullUser) => {
+      return user.login === currentUserLogin;
+    });
     const isUserExist = user ?? null;
     setCurrentUser(isUserExist);
   };
@@ -43,58 +47,28 @@ const CardsList = ({
     }
   };
 
-  const addToFavorites = (currentUserLogin: string) => {
-    const user = users.filter((user) => user.login === currentUserLogin);
-    // console.log(user, 'user');
-    // console.log(localStorageData, 'localStorageData');
+  const addToFavorites = (currUserLogin: string) => {
+    const currentUser = users.filter((user) => user.login === currUserLogin);
+    const isLocalStorageEmpty = !localStorageData.length;
 
-    // const usersLogins = localStorageData.map((user) => user.login);
-    // console.log(usersLogins, 'usersLogins');
-    // const uniqueUsersData = localStorageData.filter((user) => {
-    //   console.log(user.login, 'user.login');
-    //   console.log(usersLogins.includes(user.login));
-    //   return !usersLogins.includes(user.login);
-    // });
-
-    // console.log(uniqueUsersData, 'uniqueUsersData');
-
-    // console.log(
-    //   !localStorageData.length && !!user,
-    //   '!!localStorageData.length && !!user'
-    // );
-    // console.log(!!user, '!!user');
-    // console.log(!localStorageData.length, '!!localStorageData.length');
-    // console.log(localStorageData, 'localStorageData addToFavorites');
-
-    if (!localStorageData.length && !!user) {
-      return setLocalStorageData(user);
-    }
-
-    if (!!user) {
-      setLocalStorageData((prev) => {
-        const usersLogins = prev.map((user) => user.login);
-        console.log(usersLogins, 'usersLogins');
-
-        const uniqueUsersData = user.filter((user) => {
-          console.log(user.login, 'user.login');
-          console.log(usersLogins.includes(user.login));
-          return !usersLogins.includes(user.login);
+    isLocalStorageEmpty
+      ? setLocalStorageData(currentUser)
+      : setLocalStorageData((prev) => {
+          const uniqueUsersData = getUniqueUsersData(prev, currentUser);
+          return [...prev, ...uniqueUsersData];
         });
-        console.log(uniqueUsersData, 'uniqueUsersData');
-        return [...prev, ...uniqueUsersData];
-      });
-    }
   };
-
-  console.log(localStorageData, 'localStorageData');
 
   return (
     <>
-      <div className='Card-wrapper'>
+      <div className='CardList'>
         {users.map((user: IFullUser) => {
           return (
             <div key={user.login} className='Card'>
-              <div onClick={() => handleCardClick(user.login)}>
+              <div
+                onClick={() => handleCardClick(user.login)}
+                className='Card-container'
+              >
                 <div className='Card-thumb'>
                   <img
                     className='Card-avatar'
@@ -107,13 +81,15 @@ const CardsList = ({
                   <p className='Card-bio'>{user.bio}</p>
                 </div>
               </div>
-              <button
-                type='button'
-                className='Card-favBtn'
-                onClickCapture={() => addToFavorites(user.login)}
-              >
-                Fav
-              </button>
+              <div className='Card-favBtn-wrapper'>
+                <button
+                  type='button'
+                  className='Card-favBtn'
+                  onClick={() => addToFavorites(user.login)}
+                >
+                  Fav
+                </button>
+              </div>
             </div>
           );
         })}
@@ -124,7 +100,9 @@ const CardsList = ({
             onChange={handlePageChange}
           />
         )}
+        {loading && <p className='CardList-loading'>Loading...</p>}
       </div>
+
       {!!currentUser && <UserCard user={currentUser} resetUser={resetUser} />}
     </>
   );

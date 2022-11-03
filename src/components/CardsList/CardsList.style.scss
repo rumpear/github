@@ -1,10 +1,24 @@
+.CardList {
+  width: 400px;
+  max-height: 500px;
+  overflow-y: auto;
+  padding-right: 10px;
+  margin-bottom: 20px;
+
+  &-loading {
+    text-align: center;
+    font-size: 25px;
+  }
+}
+
 .Card {
   display: flex;
   align-items: center;
   // justify-content: center;
   // flex-direction: column;
-
-  padding: 10px 20px;
+  justify-content: space-between;
+  // gap: 15px;
+  // padding: 10px 20px;
   border: 1px solid gray;
   border-radius: 5px;
   width: 100%;
@@ -17,20 +31,14 @@
     cursor: pointer;
   }
 
-  &-wrapper {
-    width: 400px;
-    max-height: 500px;
-    overflow-y: scroll;
-    padding-right: 10px;
-    margin-bottom: 20px;
-  }
-
   &-textWrapper {
-    margin-right: 10px;
+    // margin-right: 10px;
+    flex-shrink: 1;
+    max-width: 200px;
   }
 
   &-login {
-    max-width: 165px;
+    // max-width: 165px;
     font-size: 18px;
     overflow: hidden;
     white-space: nowrap;
@@ -39,7 +47,7 @@
   }
 
   &-bio {
-    max-width: 220px;
+    // max-width: 220px;
     font-size: 14px;
     overflow: hidden;
     white-space: nowrap;
@@ -49,7 +57,7 @@
   &-thumb {
     width: 50px;
     height: 50px;
-    margin-right: 15px;
+    // margin-right: 15px;
     border-radius: 5px;
     overflow: hidden;
   }
@@ -59,7 +67,21 @@
 
   &-favBtn {
     width: 50px;
-    margin-left: auto;
+    height: 50px;
+    display: block;
+    flex-shrink: 0;
+
+    &-wrapper {
+      padding-right: 15px;
+    }
+  }
+
+  &-container {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding: 15px;
   }
 
   &-nextPageBtn {
