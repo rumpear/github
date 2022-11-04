@@ -1,12 +1,23 @@
 import { useEffect, useState, useCallback } from 'react';
 import { useFetchUsers, useLocalStorage } from '../hooks';
 import { IFullUser } from '../services/types';
-import { SearchField, CardsList } from '.';
+import { SearchField, CardsList, UserCard } from '.';
 import './App.style.scss';
+import { getUniqueUsersData } from '../utils';
+
+const toggleIsFavProp = (prev: IFullUser[], currUserLogin: string) => {
+  return prev.map((user) => {
+    if (user.login === currUserLogin) {
+      return { ...user, isFavorite: !user.isFavorite };
+    }
+    return user;
+  });
+};
 
 const App = () => {
   const [query, setQuery] = useState('');
   const [isSearchMode, setIsSearchMode] = useState(true);
+  const [currentUser, setCurrentUser] = useState<IFullUser | null>(null);
 
   const {
     usersData,
@@ -27,12 +38,63 @@ const App = () => {
   const isLoading = loading && !isUsersDataExist;
   // const isReadyToRender = !loading && !error && isUsersDataExist;
   // console.log(isReadyToRender, 'isReadyToRender');
+  const isShowNextPage = page < totalPages;
   const switchBtnLabel = isSearchMode
     ? 'Switch to Favorites'
     : 'Switch to Search';
 
   const toggleSearchMode = () => {
     setIsSearchMode((prev) => !prev);
+  };
+
+  const showCurrentUser = (currentUserLogin: string) => {
+    const user = usersData.find((user: IFullUser) => {
+      return user.login === currentUserLogin;
+    });
+    const isUserExist = user ?? null;
+    setCurrentUser(isUserExist);
+  };
+
+  const closeCurrentUser = () => {
+    setCurrentUser(null);
+  };
+
+  const goToNextPage = (inView: boolean): void => {
+    if (inView && !loading) {
+      console.log(44444);
+      nextPage();
+    }
+  };
+
+  const addToFavorites = (currUserLogin: string) => {
+    const currentUser = usersData
+      .filter((user) => {
+        return user.login === currUserLogin;
+      })
+      .map((user) => {
+        return { ...user, isFavorite: !user.isFavorite };
+      });
+
+    const isLocalStorageEmpty = !localStorageData.length;
+
+    isLocalStorageEmpty
+      ? setLocalStorageData(currentUser)
+      : setLocalStorageData((prev) => {
+          const uniqueUsersData = getUniqueUsersData(prev, currentUser);
+          return [...uniqueUsersData, ...prev];
+        });
+
+    setUsersData((prev) => toggleIsFavProp(prev, currUserLogin));
+  };
+
+  const removeFromFavorites = (currUserLogin: string) => {
+    const currentUser = localStorageData.filter((user) => {
+      return user.login !== currUserLogin;
+    });
+
+    setLocalStorageData(currentUser);
+
+    setUsersData((prev) => toggleIsFavProp(prev, currUserLogin));
   };
 
   return (
@@ -60,14 +122,12 @@ const App = () => {
           {isUsersDataExist && (
             <CardsList
               users={usersData}
-              nextPage={nextPage}
-              totalPages={totalPages}
               loading={loading}
-              page={page}
-              setUsersData={setUsersData}
-              isSearchMode={isSearchMode}
-              localStorageData={localStorageData}
-              setLocalStorageData={setLocalStorageData}
+              isShowNextPage={isShowNextPage}
+              addToFavorites={addToFavorites}
+              removeFromFavorites={removeFromFavorites}
+              showCurrentUser={showCurrentUser}
+              goToNextPage={goToNextPage}
             />
           )}
         </>
@@ -78,14 +138,19 @@ const App = () => {
           {!!favUsers.length ? (
             <CardsList
               users={favUsers}
-              isSearchMode={isSearchMode}
-              localStorageData={localStorageData}
-              setLocalStorageData={setLocalStorageData}
+              isShowNextPage={isShowNextPage}
+              addToFavorites={addToFavorites}
+              removeFromFavorites={removeFromFavorites}
+              showCurrentUser={showCurrentUser}
             />
           ) : (
             <h1>Nothing there</h1>
           )}
         </>
+      )}
+
+      {!!currentUser && (
+        <UserCard user={currentUser} resetUser={closeCurrentUser} />
       )}
     </div>
   );
