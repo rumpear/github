@@ -5,91 +5,25 @@ import { getUniqueUsersData } from '../../utils/getUniqueUsersData';
 import { UserCard } from '../UserCard';
 import './CardsList.style.scss';
 
-const toggleIsFavProp = (prev: IFullUser[], currUserLogin: string) => {
-  return prev.map((user) => {
-    if (user.login === currUserLogin) {
-      return { ...user, isFavorite: !user.isFavorite };
-    }
-    return user;
-  });
-};
-
 interface ICardsListProps {
   users: IFullUser[];
-  nextPage?: () => void;
-  totalPages?: number;
-  page?: number;
   loading?: boolean;
-  setUsersData?: React.Dispatch<React.SetStateAction<IFullUser[]>>;
-  isSearchMode: boolean;
-  localStorageData: IFullUser[];
-  setLocalStorageData: React.Dispatch<React.SetStateAction<IFullUser[]>>;
+  isShowNextPage: boolean;
+  addToFavorites: (currUserLogin: string) => void;
+  removeFromFavorites: (currUserLogin: string) => void;
+  showCurrentUser: (currentUserLogin: string) => void;
+  goToNextPage?: (inView: boolean) => void;
 }
 
 const CardsList = ({
   users,
-  nextPage = () => {},
-  page = 1,
-  totalPages = 1,
   loading = false,
-  setUsersData = () => {},
-  isSearchMode,
-  localStorageData,
-  setLocalStorageData,
+  isShowNextPage,
+  addToFavorites,
+  removeFromFavorites,
+  showCurrentUser,
+  goToNextPage,
 }: ICardsListProps) => {
-  const [currentUser, setCurrentUser] = useState<IFullUser | null>(null);
-
-  const showNextPage = page < totalPages;
-
-  const handleCardClick = (currentUserLogin: string) => {
-    const user = users.find((user: IFullUser) => {
-      return user.login === currentUserLogin;
-    });
-    const isUserExist = user ?? null;
-    setCurrentUser(isUserExist);
-  };
-
-  const resetCurrentUser = () => {
-    setCurrentUser(null);
-  };
-
-  const handlePageChange = (inView: boolean): void => {
-    if (inView && !loading) {
-      nextPage();
-    }
-  };
-
-  const addToFavorites = (currUserLogin: string) => {
-    const currentUser = users
-      .filter((user) => {
-        return user.login === currUserLogin;
-      })
-      .map((user) => {
-        return { ...user, isFavorite: !user.isFavorite };
-      });
-
-    const isLocalStorageEmpty = !localStorageData.length;
-
-    isLocalStorageEmpty
-      ? setLocalStorageData(currentUser)
-      : setLocalStorageData((prev) => {
-          const uniqueUsersData = getUniqueUsersData(prev, currentUser);
-          return [...prev, ...uniqueUsersData];
-        });
-
-    setUsersData((prev) => toggleIsFavProp(prev, currUserLogin));
-  };
-
-  const removeFromFavorites = (currUserLogin: string) => {
-    const currentUser = localStorageData.filter((user) => {
-      return user.login !== currUserLogin;
-    });
-
-    setLocalStorageData(currentUser);
-
-    setUsersData((prev) => toggleIsFavProp(prev, currUserLogin));
-  };
-
   return (
     <>
       <div className='CardList'>
@@ -102,7 +36,7 @@ const CardsList = ({
           return (
             <div key={user.login} className='Card'>
               <div
-                onClick={() => handleCardClick(user.login)}
+                onClick={() => showCurrentUser(user.login)}
                 className='Card-container'
               >
                 <div className='Card-thumb'>
@@ -141,20 +75,16 @@ const CardsList = ({
           );
         })}
 
-        {showNextPage && (
+        {isShowNextPage && (
           <InView
             as='div'
             className='Card-nextPageBtn'
-            onChange={handlePageChange}
+            onChange={goToNextPage}
           />
         )}
 
         {loading && <p className='CardList-loading'>Loading...</p>}
       </div>
-
-      {!!currentUser && (
-        <UserCard user={currentUser} resetUser={resetCurrentUser} />
-      )}
     </>
   );
 };
