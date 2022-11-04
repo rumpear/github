@@ -4,36 +4,9 @@ import { IFullUser } from '../services/types';
 import { SearchField, CardsList } from '.';
 import './App.style.scss';
 
-// type TMode = 'search' | 'favorites';
-
 const App = () => {
   const [query, setQuery] = useState('');
   const [isSearchMode, setIsSearchMode] = useState(true);
-  // const [favUsers, setFavUsers] = useState<IFullUser[]>([]);
-  // console.log(isSearchMode, 'isSearchMode');
-  // console.log(favUsers, 'favUsers');
-
-  // const { localStorageData, setLocalStorageData } = useLocalStorage<
-  //   IFullUser[],
-  //   []
-  // >('favoriteUsers', []);
-
-  // console.log(localStorageData, 'localStorageData');
-  // console.log(localStorageData.length, 'localStorage.length');
-
-  const toggleSearchMode = () => {
-    setIsSearchMode((prev) => !prev);
-  };
-
-  // remove favorites
-  // useEffect(() => {
-  //   const favoritesUsers = localStorageData
-  //     .filter((user) => {
-  //       return user.isFavorite;
-  //     })
-  //     .reverse();
-  //   setFavUsers(favoritesUsers);
-  // }, [localStorageData]);
 
   const {
     usersData,
@@ -54,10 +27,13 @@ const App = () => {
   const isLoading = loading && !isUsersDataExist;
   // const isReadyToRender = !loading && !error && isUsersDataExist;
   // console.log(isReadyToRender, 'isReadyToRender');
-
   const switchBtnLabel = isSearchMode
     ? 'Switch to Favorites'
     : 'Switch to Search';
+
+  const toggleSearchMode = () => {
+    setIsSearchMode((prev) => !prev);
+  };
 
   return (
     <div className='App'>
@@ -99,11 +75,6 @@ const App = () => {
 
       {!isSearchMode && (
         <>
-          {/* {!!favUsers.length ? (
-            favUsers.map((user) => <UserCard user={user} />)
-          ) : (
-            <h1>Nothing there</h1>
-          )} */}
           {!!favUsers.length ? (
             <CardsList
               users={favUsers}

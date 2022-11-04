@@ -1,10 +1,18 @@
 import { useEffect, useState, useMemo } from 'react';
 import { InView } from 'react-intersection-observer';
-import { useLocalStorage } from '../../hooks';
 import { IFullUser } from '../../services/types';
 import { getUniqueUsersData } from '../../utils/getUniqueUsersData';
 import { UserCard } from '../UserCard';
 import './CardsList.style.scss';
+
+const toggleIsFavProp = (prev: IFullUser[], currUserLogin: string) => {
+  return prev.map((user) => {
+    if (user.login === currUserLogin) {
+      return { ...user, isFavorite: !user.isFavorite };
+    }
+    return user;
+  });
+};
 
 interface ICardsListProps {
   users: IFullUser[];
@@ -52,80 +60,34 @@ const CardsList = ({
   };
 
   const addToFavorites = (currUserLogin: string) => {
-    // const currentUser = users.filter((user) => user.login === currUserLogin);
-
     const currentUser = users
-      .filter((user) => user.login === currUserLogin)
+      .filter((user) => {
+        return user.login === currUserLogin;
+      })
       .map((user) => {
-        // console.log(user, 'user');
-        // console.log(user.isFavorite, 'user.isFavorite');
         return { ...user, isFavorite: !user.isFavorite };
       });
 
-    // setUsersData((prev) => {
-    //   // console.log(prev, 'prev');
-    //   // console.log(currentUser, 'currentUser');
-    //   prev.forEach((user) => {
-    //     if (user.login === currUserLogin) {
-    //       user.isFavorite = !user.isFavorite;
-    //     }
-    //   });
-    //   // console.log(prev, 'prev');
-
-    //   // return [...prev, ...currentUser];
-    //   return prev;
-    // });
-
-    // setUsersData((prev) => {
-    //   const uniqueUsersData = getUniqueUsersData(prev, currentUser);
-    //   return [...prev, ...uniqueUsersData];
-    // });
-
     const isLocalStorageEmpty = !localStorageData.length;
-    console.log(currentUser, 'currentUser');
-    console.log(currentUser[0].isFavorite, 'currentUser.isFavorite');
-
-    setUsersData((prev) => {
-      return prev.map((user) => {
-        if (user.login === currUserLogin) {
-          return { ...user, isFavorite: !user.isFavorite };
-        }
-        return user;
-      });
-    });
 
     isLocalStorageEmpty
       ? setLocalStorageData(currentUser)
       : setLocalStorageData((prev) => {
           const uniqueUsersData = getUniqueUsersData(prev, currentUser);
-
           return [...prev, ...uniqueUsersData];
-
-          // * test
-          // const uniqueUsersDataWithFavorites = uniqueUsersData.map((user) => {
-          //   return { ...user, isFavorite: false };
-          // });
-
-          // return [...prev, ...uniqueUsersDataWithFavorites];
         });
+
+    setUsersData((prev) => toggleIsFavProp(prev, currUserLogin));
   };
 
   const removeFromFavorites = (currUserLogin: string) => {
-    const currentUser = localStorageData.filter(
-      (user) => user.login !== currUserLogin
-    );
-    // console.log(currentUser, 'currentUser');
-    // const isLocalStorageEmpty = !localStorageData.length;
+    const currentUser = localStorageData.filter((user) => {
+      return user.login !== currUserLogin;
+    });
+
     setLocalStorageData(currentUser);
 
-    setUsersData((prev) => {
-      return prev.map((user) => {
-        if (user.login === currUserLogin) {
-          return { ...user, isFavorite: !user.isFavorite };
-        }
-        return user;
-      });
-    });
+    setUsersData((prev) => toggleIsFavProp(prev, currUserLogin));
   };
 
   return (
@@ -136,8 +98,6 @@ const CardsList = ({
           const cb = user.isFavorite
             ? () => removeFromFavorites(user.login)
             : () => addToFavorites(user.login);
-          // console.log(user, 'user');
-          // console.log(user.isFavorite, 'user.isFavorite');
 
           return (
             <div key={user.login} className='Card'>

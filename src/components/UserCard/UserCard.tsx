@@ -3,25 +3,10 @@ import './UserCard.style.scss';
 
 interface IUserCardProps {
   user: IFullUser;
-  resetUser: any;
-
-  // user: IFullUser | IFullUser[];
-  // resetUser?: any;
+  resetUser: () => void;
 }
 
 const UserCard = ({ user, resetUser }: IUserCardProps) => {
-  // const {avatar_url
-  // login
-  // login
-  // bio
-  // location
-  // company
-  // email
-  // followers
-  // following
-  // public_repos
-  // html_url} = user
-
   return (
     <div className='UserCard'>
       <div className='UserCard-thumb'>

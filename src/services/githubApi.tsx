@@ -1,5 +1,6 @@
 import { Octokit } from 'octokit';
 import { PER_PAGE, TOKEN } from '../constants';
+import { getAdditionalUsersData } from '../utils';
 import {
   IUsersData,
   IFullUserData,
@@ -18,7 +19,6 @@ export const getUsersData: TGetUsersData = async (query, page) => {
     per_page: PER_PAGE,
     page,
   });
-
   return data;
 };
 

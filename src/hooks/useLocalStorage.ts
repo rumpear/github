@@ -14,6 +14,7 @@ export const useLocalStorage: TUseLocalStorage = <T, D>(
 ) => {
   const ifLocalDataExist = localStorage.getItem(key);
 
+  // try catch JSON.parse
   const getData = () => {
     return ifLocalDataExist ? JSON.parse(ifLocalDataExist) : defaultValue;
   };
@@ -22,7 +23,7 @@ export const useLocalStorage: TUseLocalStorage = <T, D>(
     return localStorage.setItem(key, JSON.stringify(localStorageData));
   };
 
-  const [localStorageData, setLocalStorageData] = useState<T>(getData);
+  const [localStorageData, setLocalStorageData] = useState<T>(getData());
   useEffect(setData, [key, localStorageData]);
 
   return { localStorageData, setLocalStorageData };

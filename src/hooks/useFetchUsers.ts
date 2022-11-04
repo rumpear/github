@@ -36,28 +36,11 @@ export const useFetchUsers: TUseFetchUsers = (query) => {
     []
   >('favoriteUsers', []);
 
-  useEffect(() => {
-    const favoritesUsers = localStorageData
-      .filter((user) => {
-        return user.isFavorite;
-      })
-      .reverse();
-    setFavUsers(favoritesUsers);
-  }, [localStorageData]);
-
   // const lsLogins = useMemo(
   //   () => localStorageData.map((user) => user.login),
   //   [localStorageData]
   // );
   const lsLogins = localStorageData.map((user) => user.login);
-
-  useEffect(() => {
-    setUsersData([]);
-
-    if (!query.length) {
-      setTotalUsersCount(0);
-    }
-  }, [query]);
 
   const fetchData = useCallback(async () => {
     const isQueryLessThanReqLength = query.length < MINIMAL_QUERY_LENGTH;
@@ -76,6 +59,11 @@ export const useFetchUsers: TUseFetchUsers = (query) => {
         const uniqueUsersData = getUniqueUsersData(prev, additionalData);
 
         const uniqueUsersDataWithFavorites = uniqueUsersData.map((user) =>
+          //   return {
+          //     ...user,
+          //     isFavorite: lsLogins.includes(user.login)
+          //   }
+          // }
           lsLogins.includes(user.login)
             ? { ...user, isFavorite: true }
             : { ...user, isFavorite: false }
@@ -98,6 +86,23 @@ export const useFetchUsers: TUseFetchUsers = (query) => {
     fetchData();
   }, [fetchData]);
 
+  useEffect(() => {
+    const favoritesUsers = localStorageData
+      .filter((user) => {
+        return user.isFavorite;
+      })
+      .reverse();
+    setFavUsers(favoritesUsers);
+  }, [localStorageData]);
+
+  useEffect(() => {
+    setUsersData([]);
+
+    if (!query.length) {
+      setTotalUsersCount(0);
+    }
+  }, [query]);
+
   return {
     usersData,
     setUsersData,
@@ -111,13 +116,4 @@ export const useFetchUsers: TUseFetchUsers = (query) => {
     setLocalStorageData,
     favUsers,
   };
-};
-
-const toggleIsFavProp = (prev: IFullUser[], currUserLogin: string) => {
-  return prev.map((user) => {
-    if (user.login === currUserLogin) {
-      return { ...user, isFavorite: !user.isFavorite };
-    }
-    return user;
-  });
 };
