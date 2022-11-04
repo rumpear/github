@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import { InView } from 'react-intersection-observer';
 import { useLocalStorage } from '../../hooks';
 import { IFullUser } from '../../services/types';
@@ -30,10 +30,6 @@ const CardsList = ({
   setLocalStorageData,
 }: ICardsListProps) => {
   const [currentUser, setCurrentUser] = useState<IFullUser | null>(null);
-  // const { localStorageData, setLocalStorageData } = useLocalStorage<
-  //   IFullUser[],
-  //   []
-  // >('favoriteUsers', []);
 
   const showNextPage = page < totalPages;
 
@@ -45,7 +41,7 @@ const CardsList = ({
     setCurrentUser(isUserExist);
   };
 
-  const resetUser = () => {
+  const resetCurrentUser = () => {
     setCurrentUser(null);
   };
 
@@ -118,7 +114,7 @@ const CardsList = ({
     const currentUser = localStorageData.filter(
       (user) => user.login !== currUserLogin
     );
-    console.log(currentUser, 'currentUser');
+    // console.log(currentUser, 'currentUser');
     // const isLocalStorageEmpty = !localStorageData.length;
     setLocalStorageData(currentUser);
 
@@ -196,7 +192,9 @@ const CardsList = ({
         {loading && <p className='CardList-loading'>Loading...</p>}
       </div>
 
-      {!!currentUser && <UserCard user={currentUser} resetUser={resetUser} />}
+      {!!currentUser && (
+        <UserCard user={currentUser} resetUser={resetCurrentUser} />
+      )}
     </>
   );
 };
