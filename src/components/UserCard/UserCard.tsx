@@ -4,6 +4,9 @@ import './UserCard.style.scss';
 interface IUserCardProps {
   user: IFullUser;
   resetUser: any;
+
+  // user: IFullUser | IFullUser[];
+  // resetUser?: any;
 }
 
 const UserCard = ({ user, resetUser }: IUserCardProps) => {
