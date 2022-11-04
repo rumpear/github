@@ -1,8 +1,8 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useState, useMemo } from 'react';
 import { getAdditionalUsersData, getUniqueUsersData } from '../utils';
 import { MINIMAL_QUERY_LENGTH, PER_PAGE } from '../constants';
 import { getUsersData } from '../services/githubApi';
-import { usePagination } from './';
+import { usePagination, useLocalStorage } from './';
 import { IFullUser } from '../services/types';
 
 export type TUseFetchUsers = (query: string) => {
@@ -14,6 +14,9 @@ export type TUseFetchUsers = (query: string) => {
   nextPage: () => void;
   goToPage: React.Dispatch<React.SetStateAction<number>>;
   setUsersData: React.Dispatch<React.SetStateAction<IFullUser[]>>;
+  localStorageData: IFullUser[];
+  setLocalStorageData: React.Dispatch<React.SetStateAction<IFullUser[]>>;
+  favUsers: IFullUser[];
 };
 
 export const useFetchUsers: TUseFetchUsers = (query) => {
@@ -21,11 +24,32 @@ export const useFetchUsers: TUseFetchUsers = (query) => {
   const [totalUsersCount, setTotalUsersCount] = useState<number>(0);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string>('');
+  const [favUsers, setFavUsers] = useState<IFullUser[]>([]);
 
   const { page, totalPages, nextPage, goToPage } = usePagination(
     PER_PAGE,
     totalUsersCount
   );
+
+  const { localStorageData, setLocalStorageData } = useLocalStorage<
+    IFullUser[],
+    []
+  >('favoriteUsers', []);
+
+  useEffect(() => {
+    const favoritesUsers = localStorageData
+      .filter((user) => {
+        return user.isFavorite;
+      })
+      .reverse();
+    setFavUsers(favoritesUsers);
+  }, [localStorageData]);
+
+  // const lsLogins = useMemo(
+  //   () => localStorageData.map((user) => user.login),
+  //   [localStorageData]
+  // );
+  const lsLogins = localStorageData.map((user) => user.login);
 
   useEffect(() => {
     setUsersData([]);
@@ -50,12 +74,12 @@ export const useFetchUsers: TUseFetchUsers = (query) => {
 
       setUsersData((prev) => {
         const uniqueUsersData = getUniqueUsersData(prev, additionalData);
-        // return isAdditionalDataExist ? [...prev, ...uniqueUsersData] : prev;
 
-        // *
-        const uniqueUsersDataWithFavorites = uniqueUsersData.map((user) => {
-          return { ...user, isFavorite: false };
-        });
+        const uniqueUsersDataWithFavorites = uniqueUsersData.map((user) =>
+          lsLogins.includes(user.login)
+            ? { ...user, isFavorite: true }
+            : { ...user, isFavorite: false }
+        );
 
         return isAdditionalDataExist
           ? [...prev, ...uniqueUsersDataWithFavorites]
@@ -74,8 +98,6 @@ export const useFetchUsers: TUseFetchUsers = (query) => {
     fetchData();
   }, [fetchData]);
 
-  console.log(usersData, 'usersData');
-
   return {
     usersData,
     setUsersData,
@@ -85,5 +107,17 @@ export const useFetchUsers: TUseFetchUsers = (query) => {
     goToPage,
     page,
     totalPages,
+    localStorageData,
+    setLocalStorageData,
+    favUsers,
   };
+};
+
+const toggleIsFavProp = (prev: IFullUser[], currUserLogin: string) => {
+  return prev.map((user) => {
+    if (user.login === currUserLogin) {
+      return { ...user, isFavorite: !user.isFavorite };
+    }
+    return user;
+  });
 };
