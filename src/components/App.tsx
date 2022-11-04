@@ -9,14 +9,14 @@ import './App.style.scss';
 const App = () => {
   const [query, setQuery] = useState('');
   const [isSearchMode, setIsSearchMode] = useState(true);
-  const [favUsers, setFavUsers] = useState<IFullUser[]>([]);
+  // const [favUsers, setFavUsers] = useState<IFullUser[]>([]);
   // console.log(isSearchMode, 'isSearchMode');
   // console.log(favUsers, 'favUsers');
 
-  const { localStorageData, setLocalStorageData } = useLocalStorage<
-    IFullUser[],
-    []
-  >('favoriteUsers', []);
+  // const { localStorageData, setLocalStorageData } = useLocalStorage<
+  //   IFullUser[],
+  //   []
+  // >('favoriteUsers', []);
 
   // console.log(localStorageData, 'localStorageData');
   // console.log(localStorageData.length, 'localStorage.length');
@@ -26,14 +26,14 @@ const App = () => {
   };
 
   // remove favorites
-  useEffect(() => {
-    const favoritesUsers = localStorageData
-      .filter((user) => {
-        return user.isFavorite;
-      })
-      .reverse();
-    setFavUsers(favoritesUsers);
-  }, [localStorageData]);
+  // useEffect(() => {
+  //   const favoritesUsers = localStorageData
+  //     .filter((user) => {
+  //       return user.isFavorite;
+  //     })
+  //     .reverse();
+  //   setFavUsers(favoritesUsers);
+  // }, [localStorageData]);
 
   const {
     usersData,
@@ -44,47 +44,12 @@ const App = () => {
     goToPage,
     page,
     totalPages,
+    localStorageData,
+    setLocalStorageData,
+    favUsers,
   } = useFetchUsers(query);
-  console.log(usersData, 'usersData App');
 
-  // const syncDataWithLocalStorage = useCallback(() => {
-  //   usersData.forEach((user) => {
-  //     localStorageData.forEach((local) => {
-  //       if (user.login === local.login) {
-  //         user.isFavorite = local.isFavorite;
-  //       }
-  //     });
-  //   });
-  // }, [localStorageData, usersData]);
-
-  // useEffect(() => {
-  //   syncDataWithLocalStorage();
-  // }, [syncDataWithLocalStorage]);
-
-  useEffect(() => {
-    const syncDataWithLocalStorage = () => {
-      usersData.forEach((user) => {
-        localStorageData.forEach((local) => {
-          if (user.login === local.login) {
-            user.isFavorite = local.isFavorite;
-          }
-        });
-      });
-    };
-    syncDataWithLocalStorage();
-  }, [localStorageData, usersData]);
-
-  // const syncDataWithLocalStorage = () => {
-  //   usersData.forEach((user) => {
-  //     localStorageData.forEach((local) => {
-  //       if (user.login === local.login) {
-  //         user.isFavorite = local.isFavorite;
-  //       }
-  //     });
-  //   });
-  // };
-  // syncDataWithLocalStorage();
-  const isUsersDataExist = !!usersData.length;
+  const isUsersDataExist = !!usersData?.length;
   const isError = !loading && error && !isUsersDataExist;
   const isLoading = loading && !isUsersDataExist;
   // const isReadyToRender = !loading && !error && isUsersDataExist;
