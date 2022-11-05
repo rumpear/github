@@ -1,18 +1,9 @@
 import { useEffect, useState, useCallback } from 'react';
-import { useFetchUsers, useLocalStorage } from '../hooks';
-import { IFullUser } from '../services/types';
-import { SearchField, CardsList, UserCard } from '.';
-import './App.style.scss';
-import { getUniqueUsersData } from '../utils';
-
-const toggleIsFavProp = (prev: IFullUser[], currUserLogin: string) => {
-  return prev.map((user) => {
-    if (user.login === currUserLogin) {
-      return { ...user, isFavorite: !user.isFavorite };
-    }
-    return user;
-  });
-};
+import { SearchField, CardsList, UserCard } from './components';
+import { getUniqueUsersData, toggleIsFavProp } from './utils';
+import { useFetchUsers } from './hooks';
+import { IFullUser } from './interfaces';
+import './App.scss';
 
 const App = () => {
   const [query, setQuery] = useState('');
@@ -61,7 +52,6 @@ const App = () => {
 
   const goToNextPage = (inView: boolean): void => {
     if (inView && !loading) {
-      console.log(44444);
       nextPage();
     }
   };
@@ -84,7 +74,7 @@ const App = () => {
           return [...uniqueUsersData, ...prev];
         });
 
-    setUsersData((prev) => toggleIsFavProp(prev, currUserLogin));
+    setUsersData((prev: IFullUser[]) => toggleIsFavProp(prev, currUserLogin));
   };
 
   const removeFromFavorites = (currUserLogin: string) => {
@@ -94,7 +84,7 @@ const App = () => {
 
     setLocalStorageData(currentUser);
 
-    setUsersData((prev) => toggleIsFavProp(prev, currUserLogin));
+    setUsersData((prev: IFullUser[]) => toggleIsFavProp(prev, currUserLogin));
   };
 
   return (
@@ -150,7 +140,7 @@ const App = () => {
       )}
 
       {!!currentUser && (
-        <UserCard user={currentUser} resetUser={closeCurrentUser} />
+        <UserCard user={currentUser} closeUser={closeCurrentUser} />
       )}
     </div>
   );
