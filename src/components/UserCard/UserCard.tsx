@@ -1,12 +1,12 @@
-import { IFullUser } from '../../services/types';
+import { IFullUser } from '../../interfaces';
 import './UserCard.style.scss';
 
 interface IUserCardProps {
   user: IFullUser;
-  resetUser: () => void;
+  closeUser: () => void;
 }
 
-const UserCard = ({ user, resetUser }: IUserCardProps) => {
+const UserCard = ({ user, closeUser }: IUserCardProps) => {
   return (
     <div className='UserCard'>
       <div className='UserCard-thumb'>
@@ -30,7 +30,7 @@ const UserCard = ({ user, resetUser }: IUserCardProps) => {
           </a>
         </li>
       </ul>
-      <button className='UserCard-btn' type='button' onClick={resetUser}>
+      <button className='UserCard-btn' type='button' onClick={closeUser}>
         Close
       </button>
     </div>

@@ -1,6 +1,6 @@
 import { useEffect, useState, useMemo } from 'react';
 import { InView } from 'react-intersection-observer';
-import { IFullUser } from '../../services/types';
+import { IFullUser } from '../../interfaces';
 import { getUniqueUsersData } from '../../utils/getUniqueUsersData';
 import { UserCard } from '../UserCard';
 import './CardsList.style.scss';

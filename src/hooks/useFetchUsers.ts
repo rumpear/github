@@ -3,7 +3,7 @@ import { getAdditionalUsersData, getUniqueUsersData } from '../utils';
 import { MINIMAL_QUERY_LENGTH, PER_PAGE } from '../constants';
 import { getUsersData } from '../services/githubApi';
 import { usePagination, useLocalStorage } from './';
-import { IFullUser } from '../services/types';
+import { IFullUser } from '../interfaces';
 
 export type TUseFetchUsers = (query: string) => {
   usersData: IFullUser[];
@@ -87,11 +87,10 @@ export const useFetchUsers: TUseFetchUsers = (query) => {
   }, [fetchData]);
 
   useEffect(() => {
-    const favoritesUsers = localStorageData
-      .filter((user) => {
-        return user.isFavorite;
-      })
-      .reverse();
+    const favoritesUsers = localStorageData.filter((user) => {
+      return user.isFavorite;
+    });
+
     setFavUsers(favoritesUsers);
   }, [localStorageData]);
 
