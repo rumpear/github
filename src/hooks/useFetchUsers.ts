@@ -55,18 +55,16 @@ export const useFetchUsers: TUseFetchUsers = (query) => {
       const additionalData = await getAdditionalUsersData(data.items);
       const isAdditionalDataExist = !!additionalData.length;
 
-      setUsersData((prev) => {
+      setUsersData((prev: IFullUser[]) => {
         const uniqueUsersData = getUniqueUsersData(prev, additionalData);
 
-        const uniqueUsersDataWithFavorites = uniqueUsersData.map((user) =>
-          //   return {
-          //     ...user,
-          //     isFavorite: lsLogins.includes(user.login)
-          //   }
-          // }
-          lsLogins.includes(user.login)
-            ? { ...user, isFavorite: true }
-            : { ...user, isFavorite: false }
+        const uniqueUsersDataWithFavorites = uniqueUsersData.map(
+          (user: IFullUser) => {
+            return {
+              ...user,
+              isFavorite: lsLogins.includes(user.login),
+            };
+          }
         );
 
         return isAdditionalDataExist
