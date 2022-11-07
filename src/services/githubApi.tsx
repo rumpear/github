@@ -1,5 +1,6 @@
 import { Octokit } from 'octokit';
 import { PER_PAGE, TOKEN } from '../constants';
+import { getAdditionalUsersData } from '../utils';
 import {
   IUsersData,
   IFullUserData,
@@ -11,6 +12,17 @@ const octokit = new Octokit({
   auth: TOKEN,
 });
 
+// export const getUsersData: TGetUsersData = async (query, page) => {
+//   const { data }: IUsersData = await octokit.request('GET /search/users', {
+//     q: query,
+//     // sort: 'repositories',
+//     per_page: PER_PAGE,
+//     page,
+//   });
+
+//   return data;
+// };
+
 export const getUsersData: TGetUsersData = async (query, page) => {
   const { data }: IUsersData = await octokit.request('GET /search/users', {
     q: query,
@@ -19,7 +31,8 @@ export const getUsersData: TGetUsersData = async (query, page) => {
     page,
   });
 
-  return data;
+  const additionalData = await getAdditionalUsersData(data.items);
+  return { data: additionalData, totalCount: data.total_count };
 };
 
 export const getFullUserData: TGetFullUserData = async (userName) => {

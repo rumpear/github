@@ -10,7 +10,14 @@ export interface IUsersData {
   data: IResponse;
 }
 
-export type TGetUsersData = (query: string, page: number) => Promise<IResponse>;
+// export type TGetUsersData = (query: string, page: number) => Promise<IResponse>;
+export type TGetUsersData = (
+  query: string,
+  page: number
+) => Promise<{
+  data: IFullUser[];
+  totalCount: number;
+}>;
 
 export interface IFullUserData {
   data: IFullUser;
