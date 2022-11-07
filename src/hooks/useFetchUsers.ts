@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState, useMemo } from 'react';
-import { getAdditionalUsersData, getUniqueUsersData } from '../utils';
+import { getUniqueUsersData } from '../utils';
 import { MINIMAL_QUERY_LENGTH, PER_PAGE } from '../constants';
 import { getUsersData } from '../services/githubApi';
 import { usePagination, useLocalStorage } from './';
@@ -81,7 +81,7 @@ export const useFetchUsers: TUseFetchUsers = (query) => {
   }, [fetchData]);
 
   useEffect(() => {
-    const favoritesUsers = localStorageData.filter((user) => {
+    const favoritesUsers = localStorageData.filter((user: IFullUser) => {
       return user.isFavorite;
     });
 
@@ -95,6 +95,13 @@ export const useFetchUsers: TUseFetchUsers = (query) => {
       setTotalUsersCount(0);
     }
   }, [query]);
+
+  // useEffect(() => {
+  //   if (!query.length) {
+  //     setTotalUsersCount(0);
+  //     setUsersData([]);
+  //   }
+  // }, [query]);
 
   return {
     usersData,
