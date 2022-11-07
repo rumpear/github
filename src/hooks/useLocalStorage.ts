@@ -8,18 +8,46 @@ type TUseLocalStorage = <T, D>(
   setLocalStorageData: Dispatch<SetStateAction<T>>;
 };
 
+// export const useLocalStorage: TUseLocalStorage = <T, D>(
+//   key: string,
+//   defaultValue?: D
+// ) => {
+//   const ifLocalDataExist = localStorage.getItem(key);
+
+//   // try catch JSON.parse
+//   const getData = () => {
+//     return ifLocalDataExist ? JSON.parse(ifLocalDataExist) : defaultValue;
+//   };
+
+//   // try catch JSON.parse
+//   const setData = () => {
+//     return localStorage.setItem(key, JSON.stringify(localStorageData));
+//   };
+
+//   const [localStorageData, setLocalStorageData] = useState<T>(getData());
+//   useEffect(setData, [key, localStorageData]);
+
+//   return { localStorageData, setLocalStorageData };
+// };
+
 export const useLocalStorage: TUseLocalStorage = <T, D>(
   key: string,
   defaultValue?: D
 ) => {
-  const ifLocalDataExist = localStorage.getItem(key);
-
-  // try catch JSON.parse
+  const localData = localStorage.getItem(key);
   const getData = () => {
-    return ifLocalDataExist ? JSON.parse(ifLocalDataExist) : defaultValue;
+    if (!localData) {
+      return defaultValue;
+    }
+
+    try {
+      return JSON.parse(localData);
+    } catch (error) {
+      const e = error as Error;
+      console.log(e.message);
+    }
   };
 
-  // try catch JSON.parse
   const setData = () => {
     return localStorage.setItem(key, JSON.stringify(localStorageData));
   };
