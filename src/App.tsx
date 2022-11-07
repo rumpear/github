@@ -1,6 +1,7 @@
-import { useEffect, useState, useCallback } from 'react';
+import { useState } from 'react';
 import { SearchField, CardsList, UserCard } from './components';
 import { getUniqueUsersData, toggleIsFavProp } from './utils';
+import { Button } from './components/ui';
 import { useFetchUsers } from './hooks';
 import { IFullUser } from './interfaces';
 import './App.scss';
@@ -38,12 +39,8 @@ const App = () => {
     setIsSearchMode((prev: boolean) => !prev);
   };
 
-  const showCurrentUser = (currentUserLogin: string) => {
-    const user = usersData.find((user: IFullUser) => {
-      return user.login === currentUserLogin;
-    });
-    const isUserExist = user ?? null;
-    setCurrentUser(isUserExist);
+  const showCurrentUser = (user: IFullUser) => {
+    setCurrentUser(user);
   };
 
   const closeCurrentUser = () => {
@@ -56,7 +53,16 @@ const App = () => {
     }
   };
 
-  const addToFavorites = (currUserLogin: string) => {
+  const toggleFavoriteUser = (currUserLogin: string, isFavorite: boolean) => {
+    if (isFavorite) {
+      const filteredUsers = localStorageData.filter((user: IFullUser) => {
+        return user.login !== currUserLogin;
+      });
+      setLocalStorageData(filteredUsers);
+      setUsersData((prev: IFullUser[]) => toggleIsFavProp(prev, currUserLogin));
+      return;
+    }
+
     const currentUser = usersData
       .filter((user: IFullUser) => {
         return user.login === currUserLogin;
@@ -65,41 +71,35 @@ const App = () => {
         return { ...user, isFavorite: !user.isFavorite };
       });
 
-    const isLocalStorageEmpty = !localStorageData.length;
-
-    isLocalStorageEmpty
-      ? setLocalStorageData(currentUser)
-      : setLocalStorageData((prev: IFullUser[]) => {
-          const uniqueUsersData = getUniqueUsersData(prev, currentUser);
-          return [...uniqueUsersData, ...prev];
-        });
-
     setUsersData((prev: IFullUser[]) => toggleIsFavProp(prev, currUserLogin));
-  };
 
-  const removeFromFavorites = (currUserLogin: string) => {
-    const currentUser = localStorageData.filter((user) => {
-      return user.login !== currUserLogin;
-    });
+    const isLocalStorageHasData = localStorageData.length;
+
+    if (isLocalStorageHasData) {
+      setLocalStorageData((prev: IFullUser[]) => {
+        const uniqueUsersData = getUniqueUsersData(prev, currentUser);
+        return [...uniqueUsersData, ...prev];
+      });
+      return;
+    }
 
     setLocalStorageData(currentUser);
-
-    setUsersData((prev: IFullUser[]) => toggleIsFavProp(prev, currUserLogin));
   };
 
   return (
     <div className='App'>
-      <button
-        type='button'
-        onClick={toggleSearchMode}
-        className='App-switchBtn'
-      >
-        {switchBtnLabel}
-      </button>
+      <div className='App-switchBtn'>
+        <Button
+          onClick={toggleSearchMode}
+          aria-label='Switch to search or favorites'
+        >
+          {switchBtnLabel}
+        </Button>
+      </div>
 
-      {isSearchMode && (
+      {isSearchMode ? (
         <>
-          <div className='SearchField-wrapper'>
+          <div className='App-searchField'>
             <SearchField setQuery={setQuery} goToPage={goToPage} />
           </div>
 
@@ -114,23 +114,19 @@ const App = () => {
               users={usersData}
               loading={loading}
               isShowNextPage={isShowNextPage}
-              addToFavorites={addToFavorites}
-              removeFromFavorites={removeFromFavorites}
+              toggleFavoriteUser={toggleFavoriteUser}
               showCurrentUser={showCurrentUser}
               goToNextPage={goToNextPage}
             />
           )}
         </>
-      )}
-
-      {!isSearchMode && (
+      ) : (
         <>
           {!!favUsers.length ? (
             <CardsList
               users={favUsers}
               isShowNextPage={isShowNextPage}
-              addToFavorites={addToFavorites}
-              removeFromFavorites={removeFromFavorites}
+              toggleFavoriteUser={toggleFavoriteUser}
               showCurrentUser={showCurrentUser}
             />
           ) : (
