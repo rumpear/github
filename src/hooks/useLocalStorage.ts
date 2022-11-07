@@ -19,6 +19,7 @@ export const useLocalStorage: TUseLocalStorage = <T, D>(
     return ifLocalDataExist ? JSON.parse(ifLocalDataExist) : defaultValue;
   };
 
+  // try catch JSON.parse
   const setData = () => {
     return localStorage.setItem(key, JSON.stringify(localStorageData));
   };
