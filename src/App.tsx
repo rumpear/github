@@ -35,7 +35,7 @@ const App = () => {
     : 'Switch to Search';
 
   const toggleSearchMode = () => {
-    setIsSearchMode((prev) => !prev);
+    setIsSearchMode((prev: boolean) => !prev);
   };
 
   const showCurrentUser = (currentUserLogin: string) => {
@@ -58,10 +58,10 @@ const App = () => {
 
   const addToFavorites = (currUserLogin: string) => {
     const currentUser = usersData
-      .filter((user) => {
+      .filter((user: IFullUser) => {
         return user.login === currUserLogin;
       })
-      .map((user) => {
+      .map((user: IFullUser) => {
         return { ...user, isFavorite: !user.isFavorite };
       });
 
@@ -69,7 +69,7 @@ const App = () => {
 
     isLocalStorageEmpty
       ? setLocalStorageData(currentUser)
-      : setLocalStorageData((prev) => {
+      : setLocalStorageData((prev: IFullUser[]) => {
           const uniqueUsersData = getUniqueUsersData(prev, currentUser);
           return [...uniqueUsersData, ...prev];
         });
