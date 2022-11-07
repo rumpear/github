@@ -36,11 +36,10 @@ export const useFetchUsers: TUseFetchUsers = (query) => {
     []
   >('favoriteUsers', []);
 
-  // const lsLogins = useMemo(
-  //   () => localStorageData.map((user) => user.login),
-  //   [localStorageData]
-  // );
-  const lsLogins = localStorageData.map((user) => user.login);
+  const localStorageLogins = useMemo(
+    () => localStorageData.map((user: IFullUser) => user.login),
+    [localStorageData]
+  );
 
   const fetchData = useCallback(async () => {
     const isQueryLessThanReqLength = query.length < MINIMAL_QUERY_LENGTH;
@@ -51,28 +50,25 @@ export const useFetchUsers: TUseFetchUsers = (query) => {
 
     setLoading(true);
     try {
-      const data = await getUsersData(query, page);
-      const additionalData = await getAdditionalUsersData(data.items);
-      const isAdditionalDataExist = !!additionalData.length;
+      const { data, totalCount } = await getUsersData(query, page);
+      const isDataExist = !!data.length;
 
       setUsersData((prev: IFullUser[]) => {
-        const uniqueUsersData = getUniqueUsersData(prev, additionalData);
+        const uniqueUsersData = getUniqueUsersData(prev, data);
 
         const uniqueUsersDataWithFavorites = uniqueUsersData.map(
           (user: IFullUser) => {
             return {
               ...user,
-              isFavorite: lsLogins.includes(user.login),
+              isFavorite: localStorageLogins.includes(user.login),
             };
           }
         );
 
-        return isAdditionalDataExist
-          ? [...prev, ...uniqueUsersDataWithFavorites]
-          : prev;
+        return isDataExist ? [...prev, ...uniqueUsersDataWithFavorites] : prev;
       });
 
-      setTotalUsersCount(data.total_count);
+      setTotalUsersCount(totalCount);
     } catch (error) {
       const e = error as Error;
       setError(e.message);
