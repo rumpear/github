@@ -9,7 +9,7 @@ interface ISearchFieldProps {
 
 const SearchField = ({ setQuery, goToPage }: ISearchFieldProps) => {
   const [inputVal, setInputVal] = useState('');
-  const [debouncedInputVal] = useDebounce(inputVal, 500);
+  const [debouncedInputVal] = useDebounce(inputVal, 700);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { value } = e.target;
