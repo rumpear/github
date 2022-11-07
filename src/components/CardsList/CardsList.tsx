@@ -6,9 +6,8 @@ interface ICardsListProps {
   users: IFullUser[];
   loading?: boolean;
   isShowNextPage: boolean;
-  addToFavorites: (currUserLogin: string) => void;
-  removeFromFavorites: (currUserLogin: string) => void;
-  showCurrentUser: (currentUserLogin: string) => void;
+  toggleFavoriteUser: (currUserLogin: string, isFavorite: boolean) => void;
+  showCurrentUser: (user: IFullUser) => void;
   goToNextPage?: (inView: boolean) => void;
 }
 
@@ -16,8 +15,7 @@ const CardsList = ({
   users,
   loading = false,
   isShowNextPage,
-  addToFavorites,
-  removeFromFavorites,
+  toggleFavoriteUser,
   showCurrentUser,
   goToNextPage,
 }: ICardsListProps) => {
@@ -25,14 +23,12 @@ const CardsList = ({
     <div className='CardList'>
       {users.map((user: IFullUser) => {
         const favoritesBtnLabel = user.isFavorite ? 'Del' : 'Add';
-        const cb = user.isFavorite
-          ? () => removeFromFavorites(user.login)
-          : () => addToFavorites(user.login);
+        // console.log(user, 'CardsList');
 
         return (
           <div key={user.login} className='Card'>
             <div
-              onClick={() => showCurrentUser(user.login)}
+              onClick={() => showCurrentUser(user)}
               className='Card-container'
             >
               <div className='Card-thumb'>
@@ -48,24 +44,13 @@ const CardsList = ({
               </div>
             </div>
             <div className='Card-favBtn-wrapper'>
-              <button type='button' className='Card-favBtn' onClick={cb}>
+              <button
+                type='button'
+                className='Card-favBtn'
+                onClick={() => toggleFavoriteUser(user.login, user.isFavorite)}
+              >
                 {favoritesBtnLabel}
               </button>
-
-              {/* <button
-                  type='button'
-                  className='Card-favBtn'
-                  onClick={() => addToFavorites(user.login)}
-                >
-                  Add
-                </button>
-                <button
-                  type='button'
-                  className='Card-favBtn'
-                  onClick={() => removeFromFavorites(user.login)}
-                >
-                  Del
-                </button> */}
             </div>
           </div>
         );
