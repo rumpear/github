@@ -5,20 +5,20 @@ import './CardsList.style.scss';
 
 interface ICardsListProps {
   users: IFullUser[];
-  loading?: boolean;
+  loading: boolean;
   isShowNextPage: boolean;
-  toggleFavoriteUser: (user: IFullUser) => void;
-  showCurrentUser: (user: IFullUser) => void;
   goToNextPage: (inView: boolean) => void;
+  toggleFavoriteUser: (user: IFullUser) => void;
+  toggleCurrentUser: (user: IFullUser | null) => void;
 }
 
 const CardsList = ({
   users,
   loading = false,
   isShowNextPage,
-  toggleFavoriteUser,
-  showCurrentUser,
   goToNextPage,
+  toggleFavoriteUser,
+  toggleCurrentUser,
 }: ICardsListProps) => {
   const isLoading = !!users.length && loading;
 
@@ -32,7 +32,7 @@ const CardsList = ({
         return (
           <div key={user.login} className='Card'>
             <div
-              onClick={() => showCurrentUser(user)}
+              onClick={() => toggleCurrentUser(user)}
               className='Card-container'
             >
               <div className='Card-thumb'>

@@ -3,10 +3,11 @@ import './UserCard.style.scss';
 
 interface IUserCardProps {
   user: IFullUser;
-  closeUser: () => void;
+  toggleCurrentUser: (user: IFullUser | null) => void;
 }
 
-const UserCard = ({ user, closeUser }: IUserCardProps) => {
+const UserCard = ({ user, toggleCurrentUser }: IUserCardProps) => {
+  console.log(user, 'UserCard');
   return (
     <div className='UserCard'>
       <div className='UserCard-thumb'>
@@ -26,11 +27,15 @@ const UserCard = ({ user, closeUser }: IUserCardProps) => {
         <li className='UserCard-bio'>repos: {user.public_repos}</li>
         <li className='UserCard-bio'>
           <a className='UserCard-link' href={user.html_url}>
-            Github Link
+            {'@' + user.login}
           </a>
         </li>
       </ul>
-      <button className='UserCard-btn' type='button' onClick={closeUser}>
+      <button
+        className='UserCard-btn'
+        type='button'
+        onClick={() => toggleCurrentUser(null)}
+      >
         Close
       </button>
     </div>
