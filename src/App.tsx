@@ -39,15 +39,11 @@ const App = () => {
 
   const toggleSearchMode = () => {
     setIsSearchMode((prev: boolean) => !prev);
-    closeCurrentUser();
+    toggleCurrentUser();
   };
 
-  const showCurrentUser = (user: IFullUser) => {
+  const toggleCurrentUser = (user: IFullUser | null = null) => {
     setCurrentUser(user);
-  };
-
-  const closeCurrentUser = () => {
-    setCurrentUser(null);
   };
 
   const goToNextPage = (inView: boolean): void => {
@@ -109,16 +105,16 @@ const App = () => {
           users={users}
           loading={isSearchMode && loading}
           isShowNextPage={isSearchMode && isShowNextPage}
-          toggleFavoriteUser={toggleFavoriteUser}
-          showCurrentUser={showCurrentUser}
           goToNextPage={goToNextPage}
+          toggleFavoriteUser={toggleFavoriteUser}
+          toggleCurrentUser={toggleCurrentUser}
         />
       )}
       {isWarning && <p className='CardList-warning'>Nothing there</p>}
       {isError && <h1>Something went wrong</h1>}
 
       {!!currentUser && (
-        <UserCard user={currentUser} closeUser={closeCurrentUser} />
+        <UserCard user={currentUser} toggleCurrentUser={toggleCurrentUser} />
       )}
     </div>
   );
