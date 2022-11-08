@@ -1,9 +1,6 @@
 .SearchField {
   width: 400px;
-
-  &-wrapper {
-    margin-bottom: 10px;
-  }
+  position: relative;
 
   &-input {
     width: 100%;
@@ -12,5 +9,14 @@
     // font-size: calc(10px + 1vmin);
     padding: 20px 10px;
     border-radius: 5px;
+  }
+
+  &-loading {
+    position: absolute;
+    top: 50%;
+    right: 10px;
+    z-index: 5;
+    transform: translateY(-50%);
+    color: grey;
   }
 }

@@ -3,12 +3,19 @@ import { useDebounce } from 'use-debounce';
 import './SearchField.style.scss';
 
 interface ISearchFieldProps {
+  query: string;
   setQuery: React.Dispatch<React.SetStateAction<string>>;
   goToPage: React.Dispatch<React.SetStateAction<number>>;
+  loading: boolean;
 }
 
-const SearchField = ({ setQuery, goToPage }: ISearchFieldProps) => {
-  const [inputVal, setInputVal] = useState('');
+const SearchField = ({
+  query,
+  setQuery,
+  goToPage,
+  loading,
+}: ISearchFieldProps) => {
+  const [inputVal, setInputVal] = useState(query);
   const [debouncedInputVal] = useDebounce(inputVal, 700);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -19,8 +26,7 @@ const SearchField = ({ setQuery, goToPage }: ISearchFieldProps) => {
   useEffect(() => {
     const trimmedDebouncedInputVal = debouncedInputVal.trim();
     setQuery(trimmedDebouncedInputVal);
-    goToPage(1);
-  }, [debouncedInputVal, goToPage, setQuery]);
+  }, [debouncedInputVal, setQuery]);
 
   return (
     <div className='SearchField'>
@@ -33,6 +39,7 @@ const SearchField = ({ setQuery, goToPage }: ISearchFieldProps) => {
         onChange={handleInputChange}
         value={inputVal}
       />
+      {loading && <p className='SearchField-loading'>Loading...</p>}
     </div>
   );
 };
