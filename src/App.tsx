@@ -1,7 +1,8 @@
 import { useState } from 'react';
 import { SearchField, CardsList, UserCard } from './components';
-import { getUniqueUsersData, toggleIsFavProp } from './utils';
 import { Button } from './components/ui';
+import { getUniqueUsersData, toggleIsFavProp } from './utils';
+import { SWITCH_BTN_LABELS } from './constants';
 import { useFetchUsers } from './hooks';
 import { IFullUser } from './interfaces';
 import './App.scss';
@@ -25,15 +26,16 @@ const App = () => {
     favUsers,
   } = useFetchUsers(query);
 
-  const isUsersDataExist = !!usersData?.length;
-  const isError = !loading && error && !isUsersDataExist;
-  const isLoading = loading && !isUsersDataExist;
-  // const isReadyToRender = !loading && !error && isUsersDataExist;
-  // console.log(isReadyToRender, 'isReadyToRender');
+  const users = isSearchMode ? usersData : favUsers;
+  const isUsersExist = !!users.length;
+  const isWarning = !isUsersExist && !loading && (query || !isSearchMode);
+  const isError = !!error && !loading && !isUsersExist;
   const isShowNextPage = page < totalPages;
+  const isSearchLoading = page === 1 && loading;
+
   const switchBtnLabel = isSearchMode
-    ? 'Switch to Favorites'
-    : 'Switch to Search';
+    ? SWITCH_BTN_LABELS.favorites
+    : SWITCH_BTN_LABELS.search;
 
   const toggleSearchMode = () => {
     setIsSearchMode((prev: boolean) => !prev);
@@ -54,39 +56,32 @@ const App = () => {
     }
   };
 
-  const toggleFavoriteUser = (currUserLogin: string, isFavorite: boolean) => {
+  const toggleFavoriteUser = (user: IFullUser) => {
+    const { login, isFavorite } = user;
+
     if (isFavorite) {
       const filteredUsers = localStorageData.filter((user: IFullUser) => {
-        return user.login !== currUserLogin;
+        return user.login !== login;
       });
       setLocalStorageData(filteredUsers);
-      setUsersData((prev: IFullUser[]) => toggleIsFavProp(prev, currUserLogin));
+      setUsersData((prev: IFullUser[]) => toggleIsFavProp(prev, login));
       return;
     }
 
-    const currentUser = usersData
-      .filter((user: IFullUser) => {
-        return user.login === currUserLogin;
-      })
-      .map((user: IFullUser) => {
-        return { ...user, isFavorite: !user.isFavorite };
-      });
+    const currentUser = [{ ...user, isFavorite: !user.isFavorite }];
+    setUsersData((prev: IFullUser[]) => toggleIsFavProp(prev, login));
 
-    setUsersData((prev: IFullUser[]) => toggleIsFavProp(prev, currUserLogin));
-
-    const isLocalStorageHasData = localStorageData.length;
-
-    if (isLocalStorageHasData) {
+    const isLocalStorageDataExist = localStorageData.length;
+    if (isLocalStorageDataExist) {
       setLocalStorageData((prev: IFullUser[]) => {
         const uniqueUsersData = getUniqueUsersData(prev, currentUser);
         return [...uniqueUsersData, ...prev];
       });
       return;
     }
-
     setLocalStorageData(currentUser);
   };
-  // console.log(isSearchMode && loading, 'isSearchMode && loading');
+
   return (
     <div className='App'>
       <div className='App-switchBtn'>
@@ -100,35 +95,28 @@ const App = () => {
 
       {isSearchMode && (
         <div className='App-searchField'>
-          <SearchField setQuery={setQuery} goToPage={goToPage} />
+          <SearchField
+            query={query}
+            setQuery={setQuery}
+            goToPage={goToPage}
+            loading={isSearchLoading}
+          />
         </div>
       )}
 
-      <CardsList
-        users={isSearchMode ? usersData : favUsers}
-        loading={isSearchMode && loading}
-        isShowNextPage={isSearchMode && isShowNextPage}
-        toggleFavoriteUser={toggleFavoriteUser}
-        showCurrentUser={showCurrentUser}
-        goToNextPage={goToNextPage}
-      />
-      {/* {isLoading && <h1>Loading 324234</h1>} */}
-      {isError && <h1>Something went wrong</h1>}
-
-      {/* {!loading && !isUsersDataExist && (
-        <h1>Nothing was found on your request</h1>
-      )} */}
-
-      {/* {isUsersDataExist && (
+      {isUsersExist && (
         <CardsList
-          users={isSearchMode ? usersData : favUsers}
-          loading={loading}
-          isShowNextPage={isShowNextPage}
+          users={users}
+          loading={isSearchMode && loading}
+          isShowNextPage={isSearchMode && isShowNextPage}
           toggleFavoriteUser={toggleFavoriteUser}
           showCurrentUser={showCurrentUser}
           goToNextPage={goToNextPage}
         />
-      )} */}
+      )}
+      {isWarning && <p className='CardList-warning'>Nothing there</p>}
+      {isError && <h1>Something went wrong</h1>}
+
       {!!currentUser && (
         <UserCard user={currentUser} closeUser={closeCurrentUser} />
       )}
@@ -137,43 +125,3 @@ const App = () => {
 };
 
 export default App;
-
-// {
-//   isSearchMode ? (
-//     <>
-//       <div className='App-searchField'>
-//         <SearchField setQuery={setQuery} goToPage={goToPage} />
-//       </div>
-
-//       {isLoading && <h1>Loading</h1>}
-//       {isError && <h1>Something went wrong</h1>}
-//       {/* {!loading && !isUsersDataExist && (
-//         <h1>Nothing was found on your request</h1>
-//       )} */}
-
-//       {isUsersDataExist && (
-//         <CardsList
-//           users={usersData}
-//           loading={loading}
-//           isShowNextPage={isShowNextPage}
-//           toggleFavoriteUser={toggleFavoriteUser}
-//           showCurrentUser={showCurrentUser}
-//           goToNextPage={goToNextPage}
-//         />
-//       )}
-//     </>
-//   ) : (
-//     <>
-//       {!!favUsers.length ? (
-//         <CardsList
-//           users={favUsers}
-//           isShowNextPage={isShowNextPage}
-//           toggleFavoriteUser={toggleFavoriteUser}
-//           showCurrentUser={showCurrentUser}
-//         />
-//       ) : (
-//         <h1>Nothing there</h1>
-//       )}
-//     </>
-//   );
-// }
