@@ -28,6 +28,12 @@ const SearchField = ({
     setQuery(trimmedDebouncedInputVal);
   }, [debouncedInputVal, setQuery]);
 
+  useEffect(() => {
+    if (query !== debouncedInputVal) {
+      goToPage(1);
+    }
+  }, [debouncedInputVal, goToPage, query]);
+
   return (
     <div className='SearchField'>
       <input
