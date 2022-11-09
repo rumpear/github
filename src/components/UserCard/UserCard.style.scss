@@ -2,7 +2,6 @@
   position: relative;
   display: flex;
   align-items: center;
-  // justify-content: space-between;
 
   padding: 10px;
   border: 1px solid gray;
@@ -13,8 +12,8 @@
   margin: 0 auto;
   gap: 15px;
 
-  &-text-wrapper {
-    width: 200px;
+  &-textWrapper {
+    width: 165px;
     font-size: 14px;
     overflow: hidden;
     white-space: nowrap;
@@ -22,7 +21,6 @@
   }
 
   &-login {
-    // max-width: 165px;
     font-size: 18px;
     overflow: hidden;
     white-space: nowrap;
@@ -31,7 +29,6 @@
   }
 
   &-bio {
-    // max-width: 220px;
     font-size: 14px;
     overflow: hidden;
     white-space: nowrap;
@@ -41,7 +38,6 @@
   &-thumb {
     width: 170px;
     height: 170px;
-    // margin-right: 15px;
     border-radius: 5px;
     overflow: hidden;
   }
@@ -49,9 +45,15 @@
   &-avatar {
   }
 
-  &-btn {
+  &-currentBtn {
     position: absolute;
-    top: 0;
+    top: 5px;
+    right: 0;
+  }
+
+  &-favoriteBtn {
+    position: absolute;
+    top: 45px;
     right: 0;
   }
 
