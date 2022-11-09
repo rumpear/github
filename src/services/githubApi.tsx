@@ -12,21 +12,9 @@ const octokit = new Octokit({
   auth: TOKEN,
 });
 
-// export const getUsersData: TGetUsersData = async (query, page) => {
-//   const { data }: IUsersData = await octokit.request('GET /search/users', {
-//     q: query,
-//     // sort: 'repositories',
-//     per_page: PER_PAGE,
-//     page,
-//   });
-
-//   return data;
-// };
-
 export const getUsersData: TGetUsersData = async (query, page) => {
   const { data }: IUsersData = await octokit.request('GET /search/users', {
     q: query,
-    // sort: 'repositories',
     per_page: PER_PAGE,
     page,
   });
