@@ -1,6 +1,11 @@
 import { useCallback, useEffect, useState, useMemo } from 'react';
+import debounce from 'lodash.debounce';
 import { getUniqueUsersData } from '../utils';
-import { MINIMAL_QUERY_LENGTH, PER_PAGE } from '../constants';
+import {
+  MINIMAL_QUERY_LENGTH,
+  PER_PAGE,
+  QUERY_DEBOUNCE_TIME,
+} from '../constants';
 import { getUsersData } from '../services/githubApi';
 import { usePagination, useLocalStorage } from './';
 import { IFullUser } from '../interfaces';
@@ -14,7 +19,6 @@ export type TUseFetchUsers = (query: string) => {
   page: number;
   totalPages: number;
   nextPage: () => void;
-  goToPage: React.Dispatch<React.SetStateAction<number>>;
   localStorageData: IFullUser[];
   setLocalStorageData: React.Dispatch<React.SetStateAction<IFullUser[]>>;
 };
@@ -41,17 +45,10 @@ export const useFetchUsers: TUseFetchUsers = (query) => {
     [localStorageData]
   );
 
-  const fetchData = useCallback(async () => {
-    const isQueryLessThanReqLength = query.length < MINIMAL_QUERY_LENGTH;
-
-    if (!query || isQueryLessThanReqLength) {
-      return;
-    }
-
+  const fetchData = useCallback(async (query: string, page: number) => {
     setLoading(true);
     try {
       const { data, totalCount } = await getUsersData(query, page);
-      const isDataExist = !!data.length;
 
       setUsersData((prev: IFullUser[]) => {
         const uniqueUsersData = getUniqueUsersData(prev, data);
@@ -65,6 +62,7 @@ export const useFetchUsers: TUseFetchUsers = (query) => {
           }
         );
 
+        const isDataExist = !!data.length;
         return isDataExist ? [...prev, ...uniqueUsersDataWithFavorites] : prev;
       });
 
@@ -74,11 +72,29 @@ export const useFetchUsers: TUseFetchUsers = (query) => {
       setError(e.message);
     }
     setLoading(false);
-  }, [query, page]);
+  }, []);
+
+  // * basic
+  // useEffect(() => {
+  //   const isQueryMeetRequirements = query.length >= MINIMAL_QUERY_LENGTH;
+  //   if (isQueryMeetRequirements) {
+  //     fetchData(query, page);
+  //   }
+  // }, [fetchData, page, query]);
+
+  // * debounce
+  // const fetchDataDebounced = useCallback(debounce(fetchData, 700), []);
+  const fetchDataDebounced = useMemo(
+    () => debounce(fetchData, QUERY_DEBOUNCE_TIME),
+    [fetchData]
+  );
 
   useEffect(() => {
-    fetchData();
-  }, [fetchData]);
+    const isQueryMeetRequirements = query.length >= MINIMAL_QUERY_LENGTH;
+    if (isQueryMeetRequirements) {
+      fetchDataDebounced(query, page);
+    }
+  }, [fetchDataDebounced, page, query]);
 
   useEffect(() => {
     const favoritesUsers = localStorageData.filter((user: IFullUser) => {
@@ -89,12 +105,13 @@ export const useFetchUsers: TUseFetchUsers = (query) => {
   }, [localStorageData]);
 
   useEffect(() => {
+    goToPage(1);
     setUsersData([]);
 
     if (!query.length) {
       setTotalUsersCount(0);
     }
-  }, [query]);
+  }, [goToPage, query]);
 
   return {
     usersData,
@@ -102,7 +119,6 @@ export const useFetchUsers: TUseFetchUsers = (query) => {
     loading,
     error,
     nextPage,
-    goToPage,
     page,
     totalPages,
     localStorageData,
