@@ -46,7 +46,7 @@ const App = () => {
     setCurrentUser(user);
   };
 
-  const goToNextPage = (inView: boolean): void => {
+  const loadMoreUsers = (inView: boolean): void => {
     if (inView && !loading) {
       nextPage();
     }
@@ -54,6 +54,12 @@ const App = () => {
 
   const toggleFavoriteUser = (user: IFullUser) => {
     const { login, isFavorite } = user;
+
+    setCurrentUser((prev: IFullUser | null) => {
+      return user.id === prev?.id
+        ? { ...prev, isFavorite: !prev?.isFavorite }
+        : prev;
+    });
 
     if (isFavorite) {
       const filteredUsers = localStorageData.filter((user: IFullUser) => {
@@ -64,18 +70,18 @@ const App = () => {
       return;
     }
 
-    const currentUser = [{ ...user, isFavorite: !user.isFavorite }];
+    const toggledUser = [{ ...user, isFavorite: !user.isFavorite }];
     setUsersData((prev: IFullUser[]) => toggleIsFavProp(prev, login));
 
     const isLocalStorageDataExist = localStorageData.length;
     if (isLocalStorageDataExist) {
       setLocalStorageData((prev: IFullUser[]) => {
-        const uniqueUsersData = getUniqueUsersData(prev, currentUser);
+        const uniqueUsersData = getUniqueUsersData(prev, toggledUser);
         return [...uniqueUsersData, ...prev];
       });
       return;
     }
-    setLocalStorageData(currentUser);
+    setLocalStorageData(toggledUser);
   };
 
   return (
@@ -105,7 +111,7 @@ const App = () => {
           users={users}
           loading={isSearchMode && loading}
           isShowNextPage={isSearchMode && isShowNextPage}
-          goToNextPage={goToNextPage}
+          loadMoreUsers={loadMoreUsers}
           toggleFavoriteUser={toggleFavoriteUser}
           toggleCurrentUser={toggleCurrentUser}
         />
@@ -114,7 +120,11 @@ const App = () => {
       {isError && <h1>Something went wrong</h1>}
 
       {!!currentUser && (
-        <UserCard user={currentUser} toggleCurrentUser={toggleCurrentUser} />
+        <UserCard
+          user={currentUser}
+          toggleCurrentUser={toggleCurrentUser}
+          toggleFavoriteUser={toggleFavoriteUser}
+        />
       )}
     </div>
   );
