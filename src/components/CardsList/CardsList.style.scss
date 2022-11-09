@@ -39,7 +39,7 @@
   &-textWrapper {
     // margin-right: 10px;
     flex-shrink: 1;
-    max-width: 200px;
+    max-width: 215px;
   }
 
   &-login {
@@ -70,15 +70,8 @@
   &-avatar {
   }
 
-  &-favBtn {
-    width: 50px;
-    height: 50px;
-    display: block;
-    flex-shrink: 0;
-
-    &-wrapper {
-      padding-right: 15px;
-    }
+  &-favBtnWrapper {
+    padding-right: 15px;
   }
 
   &-container {

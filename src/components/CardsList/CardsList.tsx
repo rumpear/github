@@ -1,13 +1,14 @@
 import { InView } from 'react-intersection-observer';
-import { FAVORITES_BTN_LABEL } from '../../constants';
+import { AiOutlineStar, AiFillStar } from 'react-icons/ai';
 import { IFullUser } from '../../interfaces';
+import { Button } from '../ui';
 import './CardsList.style.scss';
 
 interface ICardsListProps {
   users: IFullUser[];
   loading: boolean;
   isShowNextPage: boolean;
-  goToNextPage: (inView: boolean) => void;
+  loadMoreUsers: (inView: boolean) => void;
   toggleFavoriteUser: (user: IFullUser) => void;
   toggleCurrentUser: (user: IFullUser | null) => void;
 }
@@ -16,7 +17,7 @@ const CardsList = ({
   users,
   loading = false,
   isShowNextPage,
-  goToNextPage,
+  loadMoreUsers,
   toggleFavoriteUser,
   toggleCurrentUser,
 }: ICardsListProps) => {
@@ -25,9 +26,7 @@ const CardsList = ({
   return (
     <div className='CardList'>
       {users.map((user: IFullUser) => {
-        const favoritesBtnLabel = user.isFavorite
-          ? FAVORITES_BTN_LABEL.delete
-          : FAVORITES_BTN_LABEL.add;
+        const IconVariants = user.isFavorite ? AiFillStar : AiOutlineStar;
 
         return (
           <div key={user.login} className='Card'>
@@ -47,21 +46,22 @@ const CardsList = ({
                 <p className='Card-bio'>{user.bio}</p>
               </div>
             </div>
-            <div className='Card-favBtn-wrapper'>
-              <button
-                type='button'
-                className='Card-favBtn'
-                onClick={() => toggleFavoriteUser(user)}
-              >
-                {favoritesBtnLabel}
-              </button>
+
+            <div className='Card-favBtnWrapper'>
+              <Button variant='icon' onClick={() => toggleFavoriteUser(user)}>
+                <IconVariants size={35} color='gold' />
+              </Button>
             </div>
           </div>
         );
       })}
 
       {isShowNextPage && (
-        <InView as='div' className='Card-nextPageBtn' onChange={goToNextPage} />
+        <InView
+          as='div'
+          className='Card-nextPageBtn'
+          onChange={loadMoreUsers}
+        />
       )}
 
       {isLoading && <p className='CardList-loading'>Loading...</p>}
