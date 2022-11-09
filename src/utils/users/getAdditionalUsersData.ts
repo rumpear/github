@@ -1,5 +1,5 @@
-import { getFullUserData } from '../services/githubApi';
-import { IFullUser, IUsers } from '../interfaces';
+import { getFullUserData } from '../../services/githubApi';
+import { IFullUser, IUsers } from '../../interfaces';
 
 interface PromiseFulfilledResult<T> {
   status: 'fulfilled';

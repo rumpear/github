@@ -1,4 +1,4 @@
-import { IFullUser } from '../interfaces';
+import { IFullUser } from '../../interfaces';
 
 type TGetUniqueUsersData = <T extends IFullUser>(
   currData: T[],
