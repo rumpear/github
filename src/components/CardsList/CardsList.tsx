@@ -59,7 +59,7 @@ const CardsList = ({
       {isShowNextPage && (
         <InView
           as='div'
-          className='Card-nextPageBtn'
+          className='Card-loadMoreBtn'
           onChange={loadMoreUsers}
         />
       )}

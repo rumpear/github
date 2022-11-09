@@ -6,6 +6,7 @@
   margin-bottom: 20px;
 
   &-loading {
+    margin-top: -40px;
     text-align: center;
     font-size: 25px;
   }
@@ -82,8 +83,8 @@
     padding: 15px;
   }
 
-  &-nextPageBtn {
-    height: 1px;
+  &-loadMoreBtn {
+    height: 40px;
     width: 100%;
   }
 }
