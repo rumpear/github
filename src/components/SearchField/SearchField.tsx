@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useDebounce } from 'use-debounce';
 import './SearchField.style.scss';
 
@@ -22,6 +22,14 @@ const SearchField = ({
     const { value } = e.target;
     setInputVal(value);
   };
+
+  // const test = useCallback((val) => debounce(fetch(val), 700), []);
+
+  // useEffect(() => {
+  //   if (inputVal.length >= 3) {
+  //     test(inputVal);
+  //   }
+  // }, [inputVal]);
 
   useEffect(() => {
     const trimmedDebouncedInputVal = debouncedInputVal.trim();
