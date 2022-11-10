@@ -9,4 +9,4 @@ export const SWITCH_BTN_LABELS = {
   search: 'Switch to Search',
 };
 
-export const QUERY_DEBOUNCE_TIME = 500;
+export const QUERY_DEBOUNCE_TIME = 800;
