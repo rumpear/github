@@ -1,13 +1,10 @@
 import { useCallback, useEffect, useState, useMemo } from 'react';
 import debounce from 'lodash.debounce';
-import { getUniqueUsersData } from '../utils';
-import {
-  MINIMAL_QUERY_LENGTH,
-  PER_PAGE,
-  QUERY_DEBOUNCE_TIME,
-} from '../constants';
+import { useDebounce } from 'use-debounce';
+import { getUniqueUsersData, customDebounce } from '../utils';
+import { MINIMAL_QUERY_LENGTH, QUERY_DEBOUNCE_TIME } from '../constants';
 import { getUsersData } from '../services/githubApi';
-import { usePagination, useLocalStorage } from './';
+import { useLocalStorage } from './';
 import { IFullUser } from '../interfaces';
 
 export type TUseFetchUsers = (query: string) => {
@@ -17,10 +14,11 @@ export type TUseFetchUsers = (query: string) => {
   loading: boolean;
   error: string;
   page: number;
-  totalPages: number;
-  nextPage: () => void;
   localStorageData: IFullUser[];
   setLocalStorageData: React.Dispatch<React.SetStateAction<IFullUser[]>>;
+  isLoaded: boolean;
+  loadMoreUsers: (inView: boolean) => void;
+  isLoadMoreUsers: boolean;
 };
 
 export const useFetchUsers: TUseFetchUsers = (query) => {
@@ -29,11 +27,20 @@ export const useFetchUsers: TUseFetchUsers = (query) => {
   const [totalUsersCount, setTotalUsersCount] = useState<number>(0);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string>('');
+  const [isLoaded, setIsLoaded] = useState(false);
+  const [page, setPage] = useState(1);
+  const isLoadMoreUsers = usersData.length < totalUsersCount;
 
-  const { page, totalPages, nextPage, goToPage } = usePagination(
-    PER_PAGE,
-    totalUsersCount
-  );
+  const [debouncedQuery] = useDebounce(query, QUERY_DEBOUNCE_TIME);
+
+  useEffect(() => {
+    const isShowQueryWarning =
+      !!debouncedQuery && debouncedQuery.length < MINIMAL_QUERY_LENGTH;
+
+    if (isShowQueryWarning) {
+      console.log('Query must have at least 3 symbols');
+    }
+  }, [debouncedQuery]);
 
   const { localStorageData, setLocalStorageData } = useLocalStorage<
     IFullUser[],
@@ -45,56 +52,67 @@ export const useFetchUsers: TUseFetchUsers = (query) => {
     [localStorageData]
   );
 
-  const fetchData = useCallback(async (query: string, page: number) => {
-    setLoading(true);
-    try {
-      const { data, totalCount } = await getUsersData(query, page);
+  const fetchData = useCallback(
+    async (query: string) => {
+      setLoading(true);
 
-      setUsersData((prev: IFullUser[]) => {
-        const uniqueUsersData = getUniqueUsersData(prev, data);
+      try {
+        const { data, totalCount } = await getUsersData(query, page);
 
-        const uniqueUsersDataWithFavorites = uniqueUsersData.map(
-          (user: IFullUser) => {
-            return {
-              ...user,
-              isFavorite: localStorageLogins.includes(user.login),
-            };
-          }
-        );
+        setUsersData((prev: IFullUser[]) => {
+          const uniqueUsersData = getUniqueUsersData(prev, data);
 
-        const isDataExist = !!data.length;
-        return isDataExist ? [...prev, ...uniqueUsersDataWithFavorites] : prev;
-      });
+          const uniqueUsersDataWithFavorites = uniqueUsersData.map(
+            (user: IFullUser) => {
+              return {
+                ...user,
+                isFavorite: localStorageLogins.includes(user.login),
+              };
+            }
+          );
 
-      setTotalUsersCount(totalCount);
-    } catch (error) {
-      const e = error as Error;
-      setError(e.message);
-    }
-    setLoading(false);
-  }, []);
+          const isDataExist = !!data.length;
+          return isDataExist
+            ? [...prev, ...uniqueUsersDataWithFavorites]
+            : prev;
+        });
 
-  // * basic
-  // useEffect(() => {
-  //   const isQueryMeetRequirements = query.length >= MINIMAL_QUERY_LENGTH;
-  //   if (isQueryMeetRequirements) {
-  //     fetchData(query, page);
-  //   }
-  // }, [fetchData, page, query]);
-
-  // * debounce
-  // const fetchDataDebounced = useCallback(debounce(fetchData, 700), []);
-  const fetchDataDebounced = useMemo(
-    () => debounce(fetchData, QUERY_DEBOUNCE_TIME),
-    [fetchData]
+        setTotalUsersCount(totalCount);
+      } catch (error) {
+        const e = error as Error;
+        setError(e.message);
+      }
+      setLoading(false);
+      setIsLoaded(true);
+      setPage((prev) => prev + 1);
+    },
+    [localStorageLogins, page]
   );
+
+  const fetchDataDebounced = useCallback(
+    customDebounce<string>(fetchData, QUERY_DEBOUNCE_TIME),
+    []
+  );
+
+  // * lib Debounce
+  // const fetchDataDebounced = useCallback(
+  //   debounce(fetchData, QUERY_DEBOUNCE_TIME),
+  //   []
+  // );
+
+  const loadMoreUsers = (inView: boolean): void => {
+    if (inView && !loading) {
+      fetchData(query);
+    }
+  };
 
   useEffect(() => {
     const isQueryMeetRequirements = query.length >= MINIMAL_QUERY_LENGTH;
+
     if (isQueryMeetRequirements) {
-      fetchDataDebounced(query, page);
+      fetchDataDebounced(query);
     }
-  }, [fetchDataDebounced, page, query]);
+  }, [fetchDataDebounced, query]);
 
   useEffect(() => {
     const favoritesUsers = localStorageData.filter((user: IFullUser) => {
@@ -105,24 +123,31 @@ export const useFetchUsers: TUseFetchUsers = (query) => {
   }, [localStorageData]);
 
   useEffect(() => {
-    goToPage(1);
+    setPage(1);
     setUsersData([]);
 
     if (!query.length) {
       setTotalUsersCount(0);
     }
-  }, [goToPage, query]);
+  }, [query]);
+
+  useEffect(() => {
+    if (!!usersData.length && !isLoadMoreUsers) {
+      console.log('Yoe reached the end of the search results');
+    }
+  }, [isLoadMoreUsers, usersData]);
 
   return {
     usersData,
     setUsersData,
     loading,
     error,
-    nextPage,
     page,
-    totalPages,
     localStorageData,
     setLocalStorageData,
     favUsers,
+    isLoaded,
+    loadMoreUsers,
+    isLoadMoreUsers,
   };
 };
