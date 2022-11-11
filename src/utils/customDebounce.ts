@@ -7,7 +7,7 @@ export const customDebounce: TCustomDebounce = <A>(
   cb: Function,
   time: number
 ) => {
-  let timerId: string | number | NodeJS.Timeout | null | undefined = null;
+  let timerId: number | NodeJS.Timeout | undefined;
 
   const debounce = (...args: A[]) => {
     if (timerId) {
