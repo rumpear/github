@@ -27,10 +27,10 @@ export const useLocalStorage: TUseLocalStorage = <T, D>(
   };
 
   const setData = () => {
-    return localStorage.setItem(key, JSON.stringify(localStorageData));
+    localStorage.setItem(key, JSON.stringify(localStorageData));
   };
 
-  const [localStorageData, setLocalStorageData] = useState<T>(getData());
+  const [localStorageData, setLocalStorageData] = useState<T>(getData);
   useEffect(setData, [key, localStorageData]);
 
   return { localStorageData, setLocalStorageData };
