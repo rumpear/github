@@ -38,7 +38,12 @@ const UserCard = ({
         <li className='UserCard-bio'>following: {user.following}</li>
         <li className='UserCard-bio'>repos: {user.public_repos}</li>
         <li className='UserCard-bio'>
-          <a className='UserCard-link' href={user.html_url}>
+          <a
+            className='UserCard-link'
+            href={user.html_url}
+            target='_blank'
+            rel='noreferrer'
+          >
             {'@' + user.login}
           </a>
         </li>
