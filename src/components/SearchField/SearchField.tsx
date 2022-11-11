@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
+import { customThrottle } from '../../utils';
 import './SearchField.style.scss';
 interface ISearchFieldProps {
   query: string;
@@ -8,17 +9,50 @@ interface ISearchFieldProps {
 
 const SearchField = ({ query, setQuery, loading }: ISearchFieldProps) => {
   const [inputVal, setInputVal] = useState(query);
+  const [input, setInput] = useState('');
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  // const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  //   const { value } = e.target;
+  //   setInputVal(value);
+
+  //   const trimmedValue = value.trim();
+  //   setQuery(trimmedValue);
+  // };
+  type THandleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => void;
+
+  const handleInputChange: THandleInputChange = (e) => {
     const { value } = e.target;
     setInputVal(value);
 
     const trimmedValue = value.trim();
-    setQuery(trimmedValue);
+
+    // data(trimmedValue);
+    // const data = customThrottle(() => setQuery(trimmedValue), 1000);
+    // console.log(data);
+    // throttledSetQuery && throttledSetQuery(trimmedValue);
+    throttledSetQuery(trimmedValue);
+    // data && data(trimmedValue);
   };
+
+  // const throttledSetQuery = customThrottle(setQuery, 500);
+  const throttledSetQuery = useCallback(customThrottle(setQuery, 1000), []);
+  // // customThrottle;
+  // // data
+  // // data();
+
+  console.log(query, 'query');
 
   return (
     <div className='SearchField'>
+      {/* <input
+        className='SearchField-input'
+        autoComplete='off'
+        type='text'
+        name='name'
+        placeholder='Enter username'
+        onChange={handleInputChange}
+        value={inputVal}
+      /> */}
       <input
         className='SearchField-input'
         autoComplete='off'
@@ -34,6 +68,44 @@ const SearchField = ({ query, setQuery, loading }: ISearchFieldProps) => {
 };
 
 export default SearchField;
+
+// * work
+// import { useState } from 'react';
+// import './SearchField.style.scss';
+// interface ISearchFieldProps {
+//   query: string;
+//   setQuery: React.Dispatch<React.SetStateAction<string>>;
+//   loading: boolean;
+// }
+
+// const SearchField = ({ query, setQuery, loading }: ISearchFieldProps) => {
+//   const [inputVal, setInputVal] = useState(query);
+
+//   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+//     const { value } = e.target;
+//     setInputVal(value);
+
+//     const trimmedValue = value.trim();
+//     setQuery(trimmedValue);
+//   };
+
+//   return (
+//     <div className='SearchField'>
+//       <input
+//         className='SearchField-input'
+//         autoComplete='off'
+//         type='text'
+//         name='name'
+//         placeholder='Enter username'
+//         onChange={handleInputChange}
+//         value={inputVal}
+//       />
+//       {loading && <p className='SearchField-loading'>Loading...</p>}
+//     </div>
+//   );
+// };
+
+// export default SearchField;
 
 // * v1
 // import { useCallback, useEffect, useState } from 'react';
