@@ -1,6 +1,5 @@
 import { useCallback, useEffect, useState, useMemo } from 'react';
 import debounce from 'lodash.debounce';
-import { useDebounce } from 'use-debounce';
 import { getUniqueUsersData, customDebounce } from '../utils';
 import { MINIMAL_QUERY_LENGTH, QUERY_DEBOUNCE_TIME } from '../constants';
 import { getUsersData } from '../services/githubApi';
@@ -28,19 +27,9 @@ export const useFetchUsers: TUseFetchUsers = (query) => {
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string>('');
   const [isLoaded, setIsLoaded] = useState(false);
+
   const [page, setPage] = useState(1);
   const isLoadMoreUsers = usersData.length < totalUsersCount;
-
-  const [debouncedQuery] = useDebounce(query, QUERY_DEBOUNCE_TIME);
-
-  useEffect(() => {
-    const isShowQueryWarning =
-      !!debouncedQuery && debouncedQuery.length < MINIMAL_QUERY_LENGTH;
-
-    if (isShowQueryWarning) {
-      console.log('Query must have at least 3 symbols');
-    }
-  }, [debouncedQuery]);
 
   const { localStorageData, setLocalStorageData } = useLocalStorage<
     IFullUser[],
@@ -49,6 +38,14 @@ export const useFetchUsers: TUseFetchUsers = (query) => {
 
   const localStorageLogins = useMemo(
     () => localStorageData.map((user: IFullUser) => user.login),
+    [localStorageData]
+  );
+
+  const favoritesUsers = useMemo(
+    () =>
+      localStorageData.filter((user: IFullUser) => {
+        return user.isFavorite;
+      }),
     [localStorageData]
   );
 
@@ -115,12 +112,12 @@ export const useFetchUsers: TUseFetchUsers = (query) => {
   }, [fetchDataDebounced, query]);
 
   useEffect(() => {
-    const favoritesUsers = localStorageData.filter((user: IFullUser) => {
-      return user.isFavorite;
-    });
+    // const favoritesUsers = localStorageData.filter((user: IFullUser) => {
+    //   return user.isFavorite;
+    // });
 
     setFavUsers(favoritesUsers);
-  }, [localStorageData]);
+  }, [favoritesUsers]);
 
   useEffect(() => {
     setPage(1);
@@ -130,12 +127,6 @@ export const useFetchUsers: TUseFetchUsers = (query) => {
       setTotalUsersCount(0);
     }
   }, [query]);
-
-  useEffect(() => {
-    if (!!usersData.length && !isLoadMoreUsers) {
-      console.log('Yoe reached the end of the search results');
-    }
-  }, [isLoadMoreUsers, usersData]);
 
   return {
     usersData,
