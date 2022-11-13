@@ -6,6 +6,7 @@ import './CardsList.style.scss';
 
 interface ICardsListProps {
   users: IFullUser[];
+  isEndOfTheSearchResults: boolean;
   loading: boolean;
   isShowNextPage: boolean;
   loadMoreUsers: (inView: boolean) => void;
@@ -15,6 +16,7 @@ interface ICardsListProps {
 
 const CardsList = ({
   users,
+  isEndOfTheSearchResults,
   loading = false,
   isShowNextPage,
   loadMoreUsers,
@@ -65,6 +67,11 @@ const CardsList = ({
       )}
 
       {isLoading && <p className='CardList-loading'>Loading...</p>}
+      {isEndOfTheSearchResults && (
+        <p className='CardList-warning'>
+          You reached the end of the search results
+        </p>
+      )}
     </div>
   );
 };
