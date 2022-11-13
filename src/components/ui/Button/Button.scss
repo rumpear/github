@@ -3,8 +3,10 @@
   justify-content: center;
   align-items: center;
   cursor: pointer;
+  margin: 5px 0;
 
   &-default {
+    width: 190px;
     background-color: #f5f4fa;
     box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.15);
 
