@@ -1,5 +1,7 @@
-import { useCallback, useState } from 'react';
-import { customThrottle } from '../../utils';
+import { useCallback, useEffect, useState } from 'react';
+import debounce from 'lodash.debounce';
+import { useDebounce } from 'use-debounce';
+import { MINIMAL_QUERY_LENGTH, QUERY_DEBOUNCE_TIME } from '../../constants';
 import './SearchField.style.scss';
 interface ISearchFieldProps {
   query: string;
@@ -9,50 +11,30 @@ interface ISearchFieldProps {
 
 const SearchField = ({ query, setQuery, loading }: ISearchFieldProps) => {
   const [inputVal, setInputVal] = useState(query);
-  const [input, setInput] = useState('');
+  const [queryWarning, setQueryWarning] = useState('');
+  const [debouncedQuery] = useDebounce(query, QUERY_DEBOUNCE_TIME);
 
-  // const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-  //   const { value } = e.target;
-  //   setInputVal(value);
+  const setQueryWarningDebounced = useCallback(
+    debounce(setQueryWarning, QUERY_DEBOUNCE_TIME),
+    []
+  );
 
-  //   const trimmedValue = value.trim();
-  //   setQuery(trimmedValue);
-  // };
-  type THandleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => void;
-
-  const handleInputChange: THandleInputChange = (e) => {
+  const handleInputChange: React.ChangeEventHandler<HTMLInputElement> = (e) => {
     const { value } = e.target;
     setInputVal(value);
 
     const trimmedValue = value.trim();
-
-    // data(trimmedValue);
-    // const data = customThrottle(() => setQuery(trimmedValue), 1000);
-    // console.log(data);
-    // throttledSetQuery && throttledSetQuery(trimmedValue);
-    throttledSetQuery(trimmedValue);
-    // data && data(trimmedValue);
+    setQuery(trimmedValue);
+    setQueryWarningDebounced(trimmedValue);
   };
 
-  // const throttledSetQuery = customThrottle(setQuery, 500);
-  const throttledSetQuery = useCallback(customThrottle(setQuery, 1000), []);
-  // // customThrottle;
-  // // data
-  // // data();
-
-  console.log(query, 'query');
+  // const isShowQueryWarning = inputVal && inputVal.length < 3;
+  const isShowQueryWarning =
+    debouncedQuery && debouncedQuery.length < MINIMAL_QUERY_LENGTH && !loading;
+  // const isShowQueryWarning = queryWarning && queryWarning.length < 3;
 
   return (
     <div className='SearchField'>
-      {/* <input
-        className='SearchField-input'
-        autoComplete='off'
-        type='text'
-        name='name'
-        placeholder='Enter username'
-        onChange={handleInputChange}
-        value={inputVal}
-      /> */}
       <input
         className='SearchField-input'
         autoComplete='off'
@@ -63,175 +45,13 @@ const SearchField = ({ query, setQuery, loading }: ISearchFieldProps) => {
         value={inputVal}
       />
       {loading && <p className='SearchField-loading'>Loading...</p>}
+      {isShowQueryWarning && (
+        <p className='SearchField-warning'>
+          Query must have at least 3 symbols
+        </p>
+      )}
     </div>
   );
 };
 
 export default SearchField;
-
-// * work
-// import { useState } from 'react';
-// import './SearchField.style.scss';
-// interface ISearchFieldProps {
-//   query: string;
-//   setQuery: React.Dispatch<React.SetStateAction<string>>;
-//   loading: boolean;
-// }
-
-// const SearchField = ({ query, setQuery, loading }: ISearchFieldProps) => {
-//   const [inputVal, setInputVal] = useState(query);
-
-//   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-//     const { value } = e.target;
-//     setInputVal(value);
-
-//     const trimmedValue = value.trim();
-//     setQuery(trimmedValue);
-//   };
-
-//   return (
-//     <div className='SearchField'>
-//       <input
-//         className='SearchField-input'
-//         autoComplete='off'
-//         type='text'
-//         name='name'
-//         placeholder='Enter username'
-//         onChange={handleInputChange}
-//         value={inputVal}
-//       />
-//       {loading && <p className='SearchField-loading'>Loading...</p>}
-//     </div>
-//   );
-// };
-
-// export default SearchField;
-
-// * v1
-// import { useCallback, useEffect, useState } from 'react';
-// import { useDebounce } from 'use-debounce';
-// import './SearchField.style.scss';
-
-// interface ISearchFieldProps {
-//   query: string;
-//   setQuery: React.Dispatch<React.SetStateAction<string>>;
-//   goToPage: React.Dispatch<React.SetStateAction<number>>;
-//   loading: boolean;
-// }
-
-// const SearchField = ({
-//   query,
-//   setQuery,
-//   goToPage,
-//   loading,
-// }: ISearchFieldProps) => {
-//   const [inputVal, setInputVal] = useState(query);
-//   const [debouncedInputVal] = useDebounce(inputVal, 700);
-
-//   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-//     const { value } = e.target;
-//     setInputVal(value);
-//   };
-
-//   // const test = useCallback((val) => debounce(fetch(val), 700), []);
-
-//   // useEffect(() => {
-//   //   if (inputVal.length >= 3) {
-//   //     test(inputVal);
-//   //   }
-//   // }, [inputVal]);
-
-//   useEffect(() => {
-//     const trimmedDebouncedInputVal = debouncedInputVal.trim();
-//     setQuery(trimmedDebouncedInputVal);
-//   }, [debouncedInputVal, setQuery]);
-
-//   useEffect(() => {
-//     if (query !== debouncedInputVal) {
-//       goToPage(1);
-//     }
-//   }, [debouncedInputVal, goToPage, query]);
-
-//   return (
-//     <div className='SearchField'>
-//       <input
-//         className='SearchField-input'
-//         autoComplete='off'
-//         type='text'
-//         name='name'
-//         placeholder='Enter username'
-//         onChange={handleInputChange}
-//         value={inputVal}
-//       />
-//       {loading && <p className='SearchField-loading'>Loading...</p>}
-//     </div>
-//   );
-// };
-
-// export default SearchField;
-
-// // * v2
-// import { useCallback, useEffect, useState } from 'react';
-// import debounce from 'lodash.debounce';
-// import { QUERY_DEBOUNCE_TIME } from '../../constants';
-// import './SearchField.style.scss';
-// import { useDebounce } from 'use-debounce';
-// interface ISearchFieldProps {
-//   query: string;
-//   setQuery: React.Dispatch<React.SetStateAction<string>>;
-//   loading: boolean;
-// }
-
-// const SearchField = ({ query, setQuery, loading }: ISearchFieldProps) => {
-//   const [inputVal, setInputVal] = useState(query);
-//   // const setQueryDebounced = debounce(setQuery, 3000);
-//   // const [debouncedInputVal] = useDebounce(inputVal, 700);
-//   // const [uSetQuery] = useDebounce(setQuery, 700);
-
-//   // const setInputValDebounced = debounce(setInputVal, QUERY_DEBOUNCE_TIME);
-//   // const debouncedChangeHandler = useCallback(debounce(setQuery, 700), []);
-//   console.log(query, 'query');
-
-//   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-//     const { value } = e.target;
-//     // setInputValDebounced(value);
-//     setInputVal(value);
-//     // console.log(345);
-//     const trimmedValue = value.trim();
-//     // setQueryDebounced(value);
-//     // uSetQuery(trimmedValue);
-//     // setQuery(value);
-//     setQuery(trimmedValue);
-//     // debouncedChangeHandler(trimmedValue);
-//     // setQuery(debouncedInputVal);
-//   };
-
-//   // const handleInputChange = debounce(handleInputChange1, 700);
-//   // const [handleInputChange] = useDebounce(handleInputChange1, 700);
-//   // useEffect(() => {
-//   //   const trimmedValue = inputVal.trim();
-//   //   setQueryDebounced(trimmedValue);
-//   // }, [inputVal, setQueryDebounced]);
-
-//   // useEffect(() => {
-//   //   const trimmedDebouncedInputVal = debouncedInputVal.trim();
-//   //   setQueryDebounced(trimmedDebouncedInputVal);
-//   // }, [debouncedInputVal, setQueryDebounced]);
-
-//   return (
-//     <div className='SearchField'>
-//       <input
-//         className='SearchField-input'
-//         autoComplete='off'
-//         type='text'
-//         name='name'
-//         placeholder='Enter username'
-//         onChange={handleInputChange}
-//         value={inputVal}
-//       />
-//       {loading && <p className='SearchField-loading'>Loading...</p>}
-//     </div>
-//   );
-// };
-
-// export default SearchField;
