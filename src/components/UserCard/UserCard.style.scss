@@ -7,25 +7,59 @@
   border: 1px solid gray;
   border-radius: 5px;
   // width: 100%;
-  width: 400px;
+  width: 500px;
+  height: 215px;
   min-height: 200px;
-  margin: 0 auto;
+  margin: 10px auto;
   gap: 15px;
 
+  box-shadow: 0px 8px 12px 6px rgba(0, 0, 0, 0.15),
+    0px 4px 4px rgba(0, 0, 0, 0.3);
+
   &-textWrapper {
-    width: 165px;
+    width: 265px;
     font-size: 14px;
     overflow: hidden;
     white-space: nowrap;
     text-overflow: ellipsis;
   }
 
-  &-login {
+  &-followWrapper {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  &-some {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 15px;
+  }
+
+  &-text {
+    font-size: 15px;
+  }
+
+  &-numbers {
+    font-size: 20px;
+  }
+
+  &-name {
     font-size: 18px;
     overflow: hidden;
     white-space: nowrap;
     text-overflow: ellipsis;
+  }
+
+  &-login {
+    font-size: 14px;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
     margin-bottom: 5px;
+    font-style: italic;
   }
 
   &-bio {
@@ -33,16 +67,19 @@
     overflow: hidden;
     white-space: nowrap;
     text-overflow: ellipsis;
+    margin-bottom: 3px;
   }
 
   &-thumb {
-    width: 170px;
-    height: 170px;
+    // width: 170px;
+    // height: 170px;
     border-radius: 5px;
     overflow: hidden;
   }
 
   &-avatar {
+    width: 170px;
+    height: 170px;
   }
 
   &-currentBtn {

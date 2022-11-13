@@ -29,15 +29,10 @@ const UserCard = ({
           alt={user.login}
         />
       </div>
-      <ul className='UserCard-textWrapper'>
-        <li className='UserCard-login'>{user.login}</li>
-        <li className='UserCard-bio'>{user.bio}</li>
-        <li className='UserCard-bio'> {user.location}</li>
-        <li className='UserCard-bio'> {user.email}</li>
-        <li className='UserCard-bio'>followers: {user.followers}</li>
-        <li className='UserCard-bio'>following: {user.following}</li>
-        <li className='UserCard-bio'>repos: {user.public_repos}</li>
-        <li className='UserCard-bio'>
+
+      <div className='UserCard-textWrapper'>
+        <p className='UserCard-name'>{user.name}</p>
+        <div className={user.name ? 'UserCard-login' : 'UserCard-name'}>
           <a
             className='UserCard-link'
             href={user.html_url}
@@ -46,8 +41,27 @@ const UserCard = ({
           >
             {'@' + user.login}
           </a>
-        </li>
-      </ul>
+        </div>
+
+        <p className='UserCard-bio'>{user.bio}</p>
+        <p className='UserCard-bio'> {user.location}</p>
+        <p className='UserCard-bio'> {user.email}</p>
+
+        <div className='UserCard-followWrapper'>
+          <div className='UserCard-some'>
+            <p className='UserCard-text'>followers</p>
+            <p className='UserCard-numbers'>{user.followers}</p>
+          </div>
+          <div className='UserCard-some'>
+            <p className='UserCard-text'>following</p>
+            <p className='UserCard-numbers'>{user.following}</p>
+          </div>
+          <div className='UserCard-some'>
+            <p className='UserCard-text'>repos</p>
+            <p className='UserCard-numbers'>{user.public_repos}</p>
+          </div>
+        </div>
+      </div>
 
       <div className='UserCard-currentBtn'>
         <Button
