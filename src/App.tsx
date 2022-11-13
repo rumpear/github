@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { SearchField, CardsList, UserCard } from './components';
 import { Button } from './components/ui';
 import { getUniqueUsersData, toggleIsFavProp } from './utils';
-import { SWITCH_BTN_LABELS } from './constants';
+import { MINIMAL_QUERY_LENGTH, SWITCH_BTN_LABELS } from './constants';
 import { useFetchUsers } from './hooks';
 import { IFullUser } from './interfaces';
 import './App.scss';
@@ -28,11 +28,18 @@ const App = () => {
 
   const users = isSearchMode ? usersData : favUsers;
   const isUsersExist = !!users.length;
-
-  // const isWarning = !isUsersExist && !loading && (query || !isSearchMode);
+  const isEndOfTheSearchResults =
+    isUsersExist && !isLoadMoreUsers && isSearchMode;
 
   const isWarning =
-    !isUsersExist && isLoaded && (query.length >= 3 || !isSearchMode);
+    !isUsersExist &&
+    !loading &&
+    ((query && query.length >= MINIMAL_QUERY_LENGTH) || !isSearchMode);
+
+  // const isWarning =
+  //   !isUsersExist &&
+  //   isLoaded &&
+  //   ((query && query.length >= MINIMAL_QUERY_LENGTH) || !isSearchMode);
 
   // console.log(!isUsersExist, '!isUsersExist');
   // console.log(!loading, '!loading');
@@ -40,10 +47,6 @@ const App = () => {
   // console.log(users, 'users');
   // console.log(query.length >= 3, 'query.length >= 3');
   // console.log(query.length >= 3 && !loading, 'query.length >= 3 && !loading');
-  // console.log(
-  //   (query.length >= 3 && !loading) || !isSearchMode,
-  //   '(query.length >= 3 && !loading) || !isSearchMode)'
-  // );
   // console.log(isWarning, 'isWarning');
 
   const isError = !!error && !loading && !isUsersExist;
@@ -97,28 +100,25 @@ const App = () => {
 
   return (
     <div className='App'>
-      <div className='App-switchBtn'>
-        <Button
-          onClick={toggleSearchMode}
-          aria-label='Switch to search or favorites'
-        >
-          {switchBtnLabel}
-        </Button>
-      </div>
+      <Button
+        onClick={toggleSearchMode}
+        aria-label='Switch to search or favorites'
+      >
+        {switchBtnLabel}
+      </Button>
 
       {isSearchMode && (
-        <div className='App-searchField'>
-          <SearchField
-            query={query}
-            setQuery={setQuery}
-            loading={isSearchLoading}
-          />
-        </div>
+        <SearchField
+          query={query}
+          setQuery={setQuery}
+          loading={isSearchLoading}
+        />
       )}
 
       {isUsersExist && (
         <CardsList
           users={users}
+          isEndOfTheSearchResults={isEndOfTheSearchResults}
           loading={isCardListLoading}
           isShowNextPage={isCardListLoadMoreUsers}
           loadMoreUsers={loadMoreUsers}
@@ -126,8 +126,9 @@ const App = () => {
           toggleCurrentUser={toggleCurrentUser}
         />
       )}
+
       {/* {isWarning && <p className='CardList-warning'>Nothing there</p>} */}
-      {isError && <h1>Something went wrong</h1>}
+      {isError && <p className='CardList-error'>Something went wrong</p>}
 
       {!!currentUser && (
         <UserCard
