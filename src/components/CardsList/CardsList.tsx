@@ -1,18 +1,10 @@
 import { InView } from 'react-intersection-observer';
 import { AiOutlineStar, AiFillStar } from 'react-icons/ai';
-import { IFullUser } from '../../interfaces';
 import { Button } from '../ui';
+import { MESSAGES_LABELS } from '../../constants';
+import { IFullUser } from '../../interfaces';
+import { ICardsListProps } from './types';
 import './CardsList.style.scss';
-
-interface ICardsListProps {
-  users: IFullUser[];
-  isEndOfTheSearchResults: boolean;
-  loading: boolean;
-  isShowNextPage: boolean;
-  loadMoreUsers: (inView: boolean) => void;
-  toggleFavoriteUser: (user: IFullUser) => void;
-  toggleCurrentUser: (user: IFullUser | null) => void;
-}
 
 const CardsList = ({
   users,
@@ -66,11 +58,11 @@ const CardsList = ({
         />
       )}
 
-      {isLoading && <p className='CardList-loading'>Loading...</p>}
+      {isLoading && (
+        <p className='CardList-loading'>{MESSAGES_LABELS.loading}</p>
+      )}
       {isEndOfTheSearchResults && (
-        <p className='CardList-warning'>
-          You reached the end of the search results
-        </p>
+        <p className='CardList-warning'>{MESSAGES_LABELS.endWarning}</p>
       )}
     </div>
   );
