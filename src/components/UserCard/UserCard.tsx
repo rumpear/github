@@ -4,15 +4,10 @@ import {
   AiFillStar,
   AiOutlineCloseCircle,
 } from 'react-icons/ai';
-import { IFullUser } from '../../interfaces';
+import { ARIA_LABELS, FOLLOWERS_LABELS } from '../../constants';
 import { Button } from '../ui';
+import { IUserCardProps } from './types';
 import './UserCard.style.scss';
-
-interface IUserCardProps {
-  user: IFullUser;
-  toggleCurrentUser: (user: IFullUser | null) => void;
-  toggleFavoriteUser: (user: IFullUser) => void;
-}
 
 const UserCard = ({
   user,
@@ -21,7 +16,6 @@ const UserCard = ({
 }: IUserCardProps) => {
   const IconVariants = user.isFavorite ? AiFillStar : AiOutlineStar;
   const isUserNameExist = !!user.name;
-  const loginClassName = isUserNameExist ? 'UserCard-login' : 'UserCard-name';
 
   return (
     <div className='UserCard'>
@@ -35,11 +29,9 @@ const UserCard = ({
 
       <div className='UserCard-textWrapper'>
         {isUserNameExist && <p className='UserCard-name'>{user.name}</p>}
-        {/* <div className={loginClassName}> */}
         <div
-          className={classNames({
+          className={classNames('UserCard-name', {
             'UserCard-login': isUserNameExist,
-            'UserCard-name': !isUserNameExist,
           })}
         >
           <a
@@ -51,22 +43,20 @@ const UserCard = ({
             {'@' + user.login}
           </a>
         </div>
-
         <p className='UserCard-bio'>{user.bio}</p>
         <p className='UserCard-bio'> {user.location}</p>
         <p className='UserCard-bio'> {user.email}</p>
-
         <div className='UserCard-follow'>
           <div className='UserCard-follow-wrapper'>
-            <p className='UserCard-follow-text'>followers</p>
+            <p className='UserCard-follow-text'>{FOLLOWERS_LABELS.followers}</p>
             <p className='UserCard-follow-numbers'>{user.followers}</p>
           </div>
           <div className='UserCard-follow-wrapper'>
-            <p className='UserCard-follow-text'>following</p>
+            <p className='UserCard-follow-text'>{FOLLOWERS_LABELS.following}</p>
             <p className='UserCard-follow-numbers'>{user.following}</p>
           </div>
           <div className='UserCard-follow-wrapper'>
-            <p className='UserCard-follow-text'>repos</p>
+            <p className='UserCard-follow-text'>{FOLLOWERS_LABELS.repos}</p>
             <p className='UserCard-follow-numbers'>{user.public_repos}</p>
           </div>
         </div>
@@ -76,7 +66,7 @@ const UserCard = ({
         <Button
           variant='icon'
           onClick={() => toggleCurrentUser(null)}
-          aria-label='Close current user'
+          aria-label={ARIA_LABELS.closeUser}
         >
           <AiOutlineCloseCircle size={25} color='white' />
         </Button>
@@ -86,7 +76,7 @@ const UserCard = ({
         <Button
           variant='icon'
           onClick={() => toggleFavoriteUser(user)}
-          aria-label='Add or remove from favorites'
+          aria-label={ARIA_LABELS.toggleFav}
         >
           <IconVariants size={25} color='gold' />
         </Button>

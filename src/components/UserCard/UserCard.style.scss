@@ -6,10 +6,10 @@
   padding: 10px;
   border: 1px solid gray;
   border-radius: 5px;
-  // width: 100%;
+
   width: 500px;
   height: 215px;
-  min-height: 200px;
+  // min-height: 200px;
   margin: 10px auto;
   gap: 15px;
 
@@ -54,9 +54,6 @@
 
   &-login {
     font-size: 14px;
-    overflow: hidden;
-    white-space: nowrap;
-    text-overflow: ellipsis;
     margin-bottom: 5px;
     font-style: italic;
   }
