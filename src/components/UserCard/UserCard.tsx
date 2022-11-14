@@ -1,3 +1,4 @@
+import classNames from 'classnames';
 import {
   AiOutlineStar,
   AiFillStar,
@@ -19,6 +20,8 @@ const UserCard = ({
   toggleFavoriteUser,
 }: IUserCardProps) => {
   const IconVariants = user.isFavorite ? AiFillStar : AiOutlineStar;
+  const isUserNameExist = !!user.name;
+  const loginClassName = isUserNameExist ? 'UserCard-login' : 'UserCard-name';
 
   return (
     <div className='UserCard'>
@@ -31,8 +34,14 @@ const UserCard = ({
       </div>
 
       <div className='UserCard-textWrapper'>
-        <p className='UserCard-name'>{user.name}</p>
-        <div className={user.name ? 'UserCard-login' : 'UserCard-name'}>
+        {isUserNameExist && <p className='UserCard-name'>{user.name}</p>}
+        {/* <div className={loginClassName}> */}
+        <div
+          className={classNames({
+            'UserCard-login': isUserNameExist,
+            'UserCard-name': !isUserNameExist,
+          })}
+        >
           <a
             className='UserCard-link'
             href={user.html_url}
@@ -47,18 +56,18 @@ const UserCard = ({
         <p className='UserCard-bio'> {user.location}</p>
         <p className='UserCard-bio'> {user.email}</p>
 
-        <div className='UserCard-followWrapper'>
-          <div className='UserCard-some'>
-            <p className='UserCard-text'>followers</p>
-            <p className='UserCard-numbers'>{user.followers}</p>
+        <div className='UserCard-follow'>
+          <div className='UserCard-follow-wrapper'>
+            <p className='UserCard-follow-text'>followers</p>
+            <p className='UserCard-follow-numbers'>{user.followers}</p>
           </div>
-          <div className='UserCard-some'>
-            <p className='UserCard-text'>following</p>
-            <p className='UserCard-numbers'>{user.following}</p>
+          <div className='UserCard-follow-wrapper'>
+            <p className='UserCard-follow-text'>following</p>
+            <p className='UserCard-follow-numbers'>{user.following}</p>
           </div>
-          <div className='UserCard-some'>
-            <p className='UserCard-text'>repos</p>
-            <p className='UserCard-numbers'>{user.public_repos}</p>
+          <div className='UserCard-follow-wrapper'>
+            <p className='UserCard-follow-text'>repos</p>
+            <p className='UserCard-follow-numbers'>{user.public_repos}</p>
           </div>
         </div>
       </div>

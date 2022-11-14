@@ -24,25 +24,25 @@
     text-overflow: ellipsis;
   }
 
-  &-followWrapper {
+  &-follow {
     display: flex;
     align-items: center;
     justify-content: space-between;
-  }
 
-  &-some {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-  }
+    &-wrapper {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+    }
 
-  &-text {
-    font-size: 15px;
-  }
+    &-text {
+      font-size: 15px;
+    }
 
-  &-numbers {
-    font-size: 20px;
+    &-numbers {
+      font-size: 20px;
+    }
   }
 
   &-name {
