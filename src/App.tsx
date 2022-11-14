@@ -98,6 +98,20 @@ const App = () => {
     setLocalStorageData(toggledUser);
   };
 
+  // const test = () => {
+  //   try {
+  //     const data = await request
+
+  //     if (!data.length) {
+  //       setErrorMessage(
+  //         dasdas
+  //       )
+  //     }
+  //   } catch e {
+
+  //   }
+  // }
+
   return (
     <div className='App'>
       <Button
@@ -127,7 +141,7 @@ const App = () => {
         />
       )}
 
-      {/* {isWarning && <p className='CardList-warning'>Nothing there</p>} */}
+      {isWarning && <p className='CardList-warning'>Nothing there</p>}
       {isError && <p className='CardList-error'>Something went wrong</p>}
 
       {!!currentUser && (
