@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { MESSAGES_LABELS } from '../../constants';
 import { ISearchFieldProps, THandleInputChange } from './types';
 import './SearchField.style.scss';
 
@@ -25,7 +26,9 @@ const SearchField = ({ query, setQuery, loading }: ISearchFieldProps) => {
         value={inputVal}
       />
 
-      {loading && <p className='SearchField-loading'>Loading...</p>}
+      {loading && (
+        <p className='SearchField-loading'>{MESSAGES_LABELS.loading}</p>
+      )}
     </div>
   );
 };

@@ -1,7 +1,7 @@
 import { InView } from 'react-intersection-observer';
 import { AiOutlineStar, AiFillStar } from 'react-icons/ai';
 import { Button } from '../ui';
-import { MESSAGES_LABELS } from '../../constants';
+import { ARIA_LABELS, MESSAGES_LABELS } from '../../constants';
 import { IFullUser } from '../../interfaces';
 import { ICardsListProps } from './types';
 import './CardsList.style.scss';
@@ -42,7 +42,11 @@ const CardsList = ({
             </div>
 
             <div className='Card-favBtnWrapper'>
-              <Button variant='icon' onClick={() => toggleFavoriteUser(user)}>
+              <Button
+                variant='icon'
+                onClick={() => toggleFavoriteUser(user)}
+                aria-label={ARIA_LABELS.toggleFav}
+              >
                 <IconVariants size={35} color='gold' />
               </Button>
             </div>
