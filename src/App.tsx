@@ -1,9 +1,9 @@
 import { useState } from 'react';
 import { SearchField, CardsList, UserCard } from './components';
 import { Button } from './components/ui';
-import { getUniqueUsersData, toggleIsFavProp } from './utils';
-import { MINIMAL_QUERY_LENGTH, SWITCH_BTN_LABELS } from './constants';
 import { useFetchUsers } from './hooks';
+import { getUniqueUsersData, toggleIsFavProp } from './utils';
+import { MESSAGES_LABELS, SWITCH_BTN_LABELS, ARIA_LABELS } from './constants';
 import { IFullUser } from './interfaces';
 import './App.scss';
 
@@ -15,13 +15,13 @@ const App = () => {
   const {
     usersData,
     setUsersData,
+    isDataEmpty,
     loading,
     error,
     page,
     localStorageData,
     setLocalStorageData,
     favUsers,
-    isLoaded,
     loadMoreUsers,
     isLoadMoreUsers,
   } = useFetchUsers(query);
@@ -32,22 +32,7 @@ const App = () => {
     isUsersExist && !isLoadMoreUsers && isSearchMode;
 
   const isWarning =
-    !isUsersExist &&
-    !loading &&
-    ((query && query.length >= MINIMAL_QUERY_LENGTH) || !isSearchMode);
-
-  // const isWarning =
-  //   !isUsersExist &&
-  //   isLoaded &&
-  //   ((query && query.length >= MINIMAL_QUERY_LENGTH) || !isSearchMode);
-
-  // console.log(!isUsersExist, '!isUsersExist');
-  // console.log(!loading, '!loading');
-  // console.log(!isSearchMode, '!isSearchMode');
-  // console.log(users, 'users');
-  // console.log(query.length >= 3, 'query.length >= 3');
-  // console.log(query.length >= 3 && !loading, 'query.length >= 3 && !loading');
-  // console.log(isWarning, 'isWarning');
+    (isDataEmpty && isSearchMode) || (!isUsersExist && !isSearchMode);
 
   const isError = !!error && !loading && !isUsersExist;
   const isSearchLoading = page === 1 && loading;
@@ -98,26 +83,9 @@ const App = () => {
     setLocalStorageData(toggledUser);
   };
 
-  // const test = () => {
-  //   try {
-  //     const data = await request
-
-  //     if (!data.length) {
-  //       setErrorMessage(
-  //         dasdas
-  //       )
-  //     }
-  //   } catch e {
-
-  //   }
-  // }
-
   return (
     <div className='App'>
-      <Button
-        onClick={toggleSearchMode}
-        aria-label='Switch to search or favorites'
-      >
+      <Button onClick={toggleSearchMode} aria-label={ARIA_LABELS.switchFav}>
         {switchBtnLabel}
       </Button>
 
@@ -141,8 +109,12 @@ const App = () => {
         />
       )}
 
-      {isWarning && <p className='CardList-warning'>Nothing there</p>}
-      {isError && <p className='CardList-error'>Something went wrong</p>}
+      {isWarning && (
+        <p className='CardList-warning'>{MESSAGES_LABELS.emptyWarning}</p>
+      )}
+      {isError && (
+        <p className='CardList-error'>{MESSAGES_LABELS.emptyWarning}</p>
+      )}
 
       {!!currentUser && (
         <UserCard
