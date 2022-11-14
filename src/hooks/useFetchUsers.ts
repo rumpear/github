@@ -15,9 +15,9 @@ export type TUseFetchUsers = (query: string) => {
   page: number;
   localStorageData: IFullUser[];
   setLocalStorageData: React.Dispatch<React.SetStateAction<IFullUser[]>>;
-  isLoaded: boolean;
   loadMoreUsers: (inView: boolean) => void;
   isLoadMoreUsers: boolean;
+  isDataEmpty: boolean;
 };
 
 export const useFetchUsers: TUseFetchUsers = (query) => {
@@ -26,10 +26,11 @@ export const useFetchUsers: TUseFetchUsers = (query) => {
   const [totalUsersCount, setTotalUsersCount] = useState<number>(0);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string>('');
-  const [isLoaded, setIsLoaded] = useState(false);
+  const [isDataEmpty, setIsDataEmpty] = useState(false);
 
   const [page, setPage] = useState(1);
   const isLoadMoreUsers = usersData.length < totalUsersCount;
+  const isQueryMeetRequirements = query.length >= MINIMAL_QUERY_LENGTH;
 
   const { localStorageData, setLocalStorageData } = useLocalStorage<
     IFullUser[],
@@ -55,6 +56,8 @@ export const useFetchUsers: TUseFetchUsers = (query) => {
 
       try {
         const { data, totalCount } = await getUsersData(query, page);
+        const isDataExist = !!data.length;
+        isDataExist ? setIsDataEmpty(false) : setIsDataEmpty(true);
 
         setUsersData((prev: IFullUser[]) => {
           const uniqueUsersData = getUniqueUsersData(prev, data);
@@ -68,7 +71,6 @@ export const useFetchUsers: TUseFetchUsers = (query) => {
             }
           );
 
-          const isDataExist = !!data.length;
           return isDataExist
             ? [...prev, ...uniqueUsersDataWithFavorites]
             : prev;
@@ -80,7 +82,6 @@ export const useFetchUsers: TUseFetchUsers = (query) => {
         setError(e.message);
       }
       setLoading(false);
-      setIsLoaded(true);
       setPage((prev) => prev + 1);
     },
     [localStorageLogins, page]
@@ -103,30 +104,29 @@ export const useFetchUsers: TUseFetchUsers = (query) => {
     }
   };
 
-  useEffect(() => {
-    const isQueryMeetRequirements = query.length >= MINIMAL_QUERY_LENGTH;
-
-    if (isQueryMeetRequirements) {
-      fetchDataDebounced(query);
-    }
-  }, [fetchDataDebounced, query]);
-
-  useEffect(() => {
-    // const favoritesUsers = localStorageData.filter((user: IFullUser) => {
-    //   return user.isFavorite;
-    // });
-
-    setFavUsers(favoritesUsers);
-  }, [favoritesUsers]);
-
-  useEffect(() => {
+  const resetSearch = useCallback(() => {
     setPage(1);
     setUsersData([]);
+    setIsDataEmpty(false);
 
     if (!query.length) {
       setTotalUsersCount(0);
     }
   }, [query]);
+
+  useEffect(() => {
+    if (isQueryMeetRequirements) {
+      fetchDataDebounced(query);
+    }
+  }, [fetchDataDebounced, isQueryMeetRequirements, query]);
+
+  useEffect(() => {
+    setFavUsers(favoritesUsers);
+  }, [favoritesUsers]);
+
+  useEffect(() => {
+    resetSearch();
+  }, [resetSearch]);
 
   return {
     usersData,
@@ -137,8 +137,8 @@ export const useFetchUsers: TUseFetchUsers = (query) => {
     localStorageData,
     setLocalStorageData,
     favUsers,
-    isLoaded,
     loadMoreUsers,
     isLoadMoreUsers,
+    isDataEmpty,
   };
 };
