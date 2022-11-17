@@ -15,7 +15,7 @@ export type TUseFetchUsers = (query: string) => {
   page: number;
   localStorageData: IFullUser[];
   setLocalStorageData: React.Dispatch<React.SetStateAction<IFullUser[]>>;
-  loadMoreUsers: (inView: boolean) => void;
+  loadMoreUsers: () => void;
   isLoadMoreUsers: boolean;
   isDataEmpty: boolean;
 };
@@ -98,8 +98,8 @@ export const useFetchUsers: TUseFetchUsers = (query) => {
   //   []
   // );
 
-  const loadMoreUsers = (inView: boolean): void => {
-    if (inView && !loading) {
+  const loadMoreUsers = (): void => {
+    if (!loading) {
       fetchData(query);
     }
   };
