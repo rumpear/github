@@ -1,11 +1,11 @@
-import { useState, useEffect, Dispatch, SetStateAction } from 'react';
+import { useState, useEffect } from 'react';
 
 type TUseLocalStorage = <T, D>(
   key: string,
   defaultValue?: D
 ) => {
   localStorageData: T;
-  setLocalStorageData: Dispatch<SetStateAction<T>>;
+  setLocalStorageData: React.Dispatch<React.SetStateAction<T>>;
 };
 
 export const useLocalStorage: TUseLocalStorage = <T, D>(
