@@ -1,7 +1,8 @@
-import { InView } from 'react-intersection-observer';
+import { useEffect } from 'react';
 import { AiOutlineStar, AiFillStar } from 'react-icons/ai';
 import { Button } from '../ui';
 import { ARIA_LABELS, MESSAGES_LABELS } from '../../constants';
+import { useObserver } from '../../hooks';
 import { IFullUser } from '../../interfaces';
 import { ICardsListProps } from './types';
 import './CardsList.style.scss';
@@ -15,7 +16,14 @@ const CardsList = ({
   toggleFavoriteUser,
   toggleCurrentUser,
 }: ICardsListProps) => {
+  const { containerRef, isVisible } = useObserver();
   const isLoading = !!users.length && loading;
+
+  useEffect(() => {
+    if (isVisible) {
+      loadMoreUsers();
+    }
+  }, [isVisible, loadMoreUsers]);
 
   return (
     <div className='CardList'>
@@ -54,17 +62,12 @@ const CardsList = ({
         );
       })}
 
-      {isShowNextPage && (
-        <InView
-          as='div'
-          className='Card-loadMoreBtn'
-          onChange={loadMoreUsers}
-        />
-      )}
+      {isShowNextPage && <div ref={containerRef} className='Card-loadMore' />}
 
       {isLoading && (
         <p className='CardList-loading'>{MESSAGES_LABELS.loading}</p>
       )}
+
       {isEndOfTheSearchResults && (
         <p className='CardList-warning'>{MESSAGES_LABELS.endWarning}</p>
       )}

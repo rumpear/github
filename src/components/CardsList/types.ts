@@ -5,7 +5,7 @@ export interface ICardsListProps {
   isEndOfTheSearchResults: boolean;
   loading: boolean;
   isShowNextPage: boolean;
-  loadMoreUsers: (inView: boolean) => void;
+  loadMoreUsers: () => void;
   toggleFavoriteUser: (user: IFullUser) => void;
   toggleCurrentUser: (user: IFullUser | null) => void;
 }
