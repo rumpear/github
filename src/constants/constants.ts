@@ -16,6 +16,7 @@ export const MESSAGES_LABELS = {
   endWarning: 'You reached the end of the search results',
   error: 'Something went wrong',
   loading: 'Loading...',
+  searchMessage: 'Enter username (at least 3 symbols)',
 };
 
 export const FOLLOWERS_LABELS = {
