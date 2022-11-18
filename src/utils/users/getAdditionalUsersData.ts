@@ -8,7 +8,7 @@ interface PromiseFulfilledResult<T> {
 
 interface PromiseRejectedResult {
   status: 'rejected';
-  reason: any;
+  reason: unknown;
 }
 
 type PromiseSettledResult<T> =
