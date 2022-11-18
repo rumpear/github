@@ -5,7 +5,7 @@ import { ARIA_LABELS, MESSAGES_LABELS } from '../../constants';
 import { useObserver } from '../../hooks';
 import { IFullUser } from '../../interfaces';
 import { ICardsListProps } from './types';
-import './CardsList.style.scss';
+import './CardsList.scss';
 
 const CardsList = ({
   users,

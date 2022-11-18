@@ -1,10 +1,16 @@
 .CardList {
-  width: 500px;
-  max-height: 500px;
+  max-width: 500px;
+  width: 100%;
+
+  max-height: 458px;
   overflow-y: auto;
-  // padding-right: 4px;
+  padding-right: 4px;
 
   margin: 10px 0;
+
+  @media screen and (min-width: 480px) {
+    max-height: 554px;
+  }
 
   &-loading {
     margin-top: -40px;
@@ -30,7 +36,7 @@
   }
 
   &::-webkit-scrollbar-track {
-    -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.2);
+    box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.2);
     border-radius: 10px;
     background-color: #f9f9fd;
   }
@@ -39,15 +45,10 @@
 .Card {
   display: flex;
   align-items: center;
-  // justify-content: center;
-  // flex-direction: column;
   justify-content: space-between;
-  // gap: 15px;
-  // padding: 10px 20px;
   border: 1px solid gray;
   border-radius: 5px;
-  width: 99%;
-  // width: 100%;
+  width: 100%;
 
   box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.3),
     0px 1px 3px 1px rgba(0, 0, 0, 0.15);
@@ -62,11 +63,18 @@
 
   &-textWrapper {
     flex-shrink: 1;
-    max-width: 330px;
+    max-width: 150px;
+
+    @media screen and (min-width: 430px) {
+      max-width: 290px;
+    }
+
+    @media screen and (min-width: 530px) {
+      max-width: 330px;
+    }
   }
 
   &-login {
-    // max-width: 165px;
     font-size: 18px;
     overflow: hidden;
     white-space: nowrap;
@@ -75,34 +83,40 @@
   }
 
   &-bio {
-    // max-width: 220px;
     font-size: 14px;
     overflow: hidden;
     white-space: nowrap;
     text-overflow: ellipsis;
+    @media screen and (max-width: 480px) {
+      display: none;
+    }
   }
 
   &-thumb {
     width: 50px;
     height: 50px;
-    // margin-right: 15px;
     border-radius: 5px;
     overflow: hidden;
   }
 
-  &-avatar {
-  }
-
   &-favBtnWrapper {
-    padding-right: 15px;
+    padding-right: 3px;
+
+    @media screen and (min-width: 480px) {
+      padding-right: 15px;
+    }
   }
 
   &-container {
     width: 100%;
     display: flex;
     align-items: center;
+    padding: 8px;
     gap: 15px;
-    padding: 15px;
+
+    @media screen and (min-width: 480px) {
+      padding: 15px;
+    }
   }
 
   &-loadMore {
