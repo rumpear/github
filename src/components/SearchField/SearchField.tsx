@@ -1,7 +1,7 @@
-import { useState } from 'react';
+import { memo, useState } from 'react';
 import { MESSAGES_LABELS } from '../../constants';
 import { ISearchFieldProps, THandleInputChange } from './types';
-import './SearchField.style.scss';
+import './SearchField.scss';
 
 const SearchField = ({ query, setQuery, loading }: ISearchFieldProps) => {
   const [inputVal, setInputVal] = useState(query);
@@ -21,7 +21,7 @@ const SearchField = ({ query, setQuery, loading }: ISearchFieldProps) => {
         autoComplete='off'
         type='text'
         name='name'
-        placeholder='Enter username (at least 3 symbols)'
+        placeholder={MESSAGES_LABELS.searchMessage}
         onChange={handleInputChange}
         value={inputVal}
       />
@@ -33,4 +33,4 @@ const SearchField = ({ query, setQuery, loading }: ISearchFieldProps) => {
   );
 };
 
-export default SearchField;
+export default memo(SearchField);
