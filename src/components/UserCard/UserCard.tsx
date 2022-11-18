@@ -7,7 +7,7 @@ import {
 import { ARIA_LABELS, FOLLOWERS_LABELS } from '../../constants';
 import { Button } from '../ui';
 import { IUserCardProps } from './types';
-import './UserCard.style.scss';
+import './UserCard.scss';
 
 const UserCard = ({
   user,
@@ -15,7 +15,10 @@ const UserCard = ({
   toggleFavoriteUser,
 }: IUserCardProps) => {
   const IconVariants = user.isFavorite ? AiFillStar : AiOutlineStar;
-  const isUserNameExist = !!user.name;
+  const isNameExist = !!user.name;
+  const isBioExist = !!user.bio;
+  const isLocationExist = !!user.location;
+  const isEmailExist = !!user.email;
 
   return (
     <div className='UserCard'>
@@ -28,10 +31,10 @@ const UserCard = ({
       </div>
 
       <div className='UserCard-textWrapper'>
-        {isUserNameExist && <p className='UserCard-name'>{user.name}</p>}
+        {isNameExist && <p className='UserCard-name'>{user.name}</p>}
         <div
           className={classNames('UserCard-name', {
-            'UserCard-login': isUserNameExist,
+            'UserCard-login': isNameExist,
           })}
         >
           <a
@@ -43,9 +46,16 @@ const UserCard = ({
             {'@' + user.login}
           </a>
         </div>
-        <p className='UserCard-bio'>{user.bio}</p>
-        <p className='UserCard-bio'> {user.location}</p>
-        <p className='UserCard-bio'> {user.email}</p>
+        {isBioExist && <p className='UserCard-data'>{user.bio}</p>}
+        {isLocationExist && <p className='UserCard-data'> {user.location}</p>}
+        {isEmailExist && (
+          <a
+            href={'mailto:' + user.email}
+            className='UserCard-data UserCard-email'
+          >
+            {user.email}
+          </a>
+        )}
         <div className='UserCard-follow'>
           <div className='UserCard-follow-wrapper'>
             <p className='UserCard-follow-text'>{FOLLOWERS_LABELS.followers}</p>
